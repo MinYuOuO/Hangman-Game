@@ -7,9 +7,10 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "${fileDirname}\\src\\main.cpp",
+                "${workspaceFolder}\\src\\main.cpp",
+                "${workspaceFolder}\\src\\modulars.cpp",
                 "-o",
-                "${fileDirname}\\build\\main.exe"
+                "${workspaceFolder}\\build\\main.exe"
             ],
             "options": {
                 "cwd": "${fileDirname}"
