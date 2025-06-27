@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include "function.h"
 using namespace std;
 
 //@brief This function will wait for user to continue
@@ -11,11 +11,12 @@ void wait() {
 }
 
 // start up menu interface
-void startMenu() {
+/*void startMenu() {
     cout << "Hello World...";
     wait();
 }
-
+*/
 int main() {
-    startMenu();
+    runGame();
+    return 0;
 }
