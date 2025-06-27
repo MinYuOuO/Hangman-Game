@@ -76,6 +76,27 @@ void runGame() {
         cout << "Please enter your name: ";
         cin >> player1;
         cout << "\nGood luck in your game later, player " << player1 << "!\n";
+
+        waitForKey();
+        cout << "\033[2J\033[1;1H";
+        displayTitle();
+
+        int category;
+        cout << "Player " << player1 << ",\n\n";
+        cout << "Please choose a category:\n";
+        cout << "[1] Food\n";
+        cout << "[2] Country\n";
+        cout << "[3] Comp. Science\n\n";
+        cout << "Category number : ";
+        cin >> category;
+
+        cout << "\033[2J\033[1;1H";
+        displayTitle();
+        cout << "====================  C A T E G O R Y   S E L E C T E D  :  " << category << "  =====================\n\n";
+
+        cout << "Before you start, remember the answer consists of 6 alphabets.\n\n";
+        cout << "Make sure you answer in UPPERCASE ! !\n\n";
+        waitForKey();
     } else if (mode == 2) {
         cout << "Please enter your name\n";
         cout << "Player 1 : ";
