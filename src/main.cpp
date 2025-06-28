@@ -1,5 +1,6 @@
 #include <iostream>
 #include "function.h"
+
 using namespace std;
 
 void startMenu() {
@@ -25,6 +26,8 @@ void startMenu() {
         cout << "\nGood luck in your game later, player " << player.name << "!" << endl;
 
         wait(2.0);
+
+        system("cls");
 
         title();
 

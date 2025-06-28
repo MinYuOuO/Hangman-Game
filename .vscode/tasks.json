@@ -9,8 +9,11 @@
                 "-g",
                 "${workspaceFolder}\\src\\main.cpp",
                 "${workspaceFolder}\\src\\modulars.cpp",
+                "-I\"D:\\Program Files\\SFML-3.0.0\\include\"",
                 "-o",
-                "${workspaceFolder}\\build\\main.exe"
+                "${workspaceFolder}\\build\\main.exe",
+                "-L\"D:\\Program Files\\SFML-3.0.0\\lib\"",
+                "-lsfml-graphics",
             ],
             "options": {
                 "cwd": "${fileDirname}"
