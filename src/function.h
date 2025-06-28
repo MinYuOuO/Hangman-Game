@@ -1,7 +1,8 @@
 #pragma once
 #include <iostream>
+#include <string>
 using namespace std;
-
+std::string input(std::string value);
 //Menu
 
 /**

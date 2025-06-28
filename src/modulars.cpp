@@ -1,13 +1,16 @@
 #include <iostream>
 #include <conio.h>
 #include <ctime>
+#include <string>
+#include "function.h"
+#include <limits>
+
 using namespace std;
 
-//Menu
 void title() {
-    cout<< "=============================================================================\n";
-    cout<< "===========================  H  A  N  G  M  A  N  ===========================\n";
-    cout<< "=============================================================================\n\n";
+    cout << "=============================================================================\n";
+    cout << "===========================  H  A  N  G  M  A  N  ===========================\n";
+    cout << "=============================================================================\n\n";
 }
 
 void displayExitMessage() {
@@ -28,17 +31,17 @@ void wait() {
 void wait(float seconds) {
     clock_t startClock = clock();
     float secondsAhead = seconds * CLOCKS_PER_SEC;
-    while(clock() < startClock+secondsAhead);
-    return;
+    while(clock() < startClock + secondsAhead);
 }
 
 int input(int value) {
     int insert;
     while (true) {
         cin >> insert;
-        if (cin.fail() || value <= 0) {
+        if (cin.fail() || insert < 0) {
             cout << "Invalid input. Value must be a non-negative number. Please try again." << endl;
             cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
         } else {
             return insert;
         }
@@ -47,11 +50,12 @@ int input(int value) {
 
 string input(string value) {
     string insert;
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     while (true) {
-        cin >> insert;
-        if (cin.fail() || value == "") {
-            cout << "Invalid input. Value must be a non-negative number. Please try again." << endl;
-            cin.clear();
+        cout << value;
+        getline(cin, insert);
+        if (insert.empty()) {
+            cout << "Invalid input. Please enter a non-empty value. Try again." << endl;
         } else {
             return insert;
         }
@@ -62,40 +66,12 @@ char input(char value) {
     char insert;
     while (true) {
         cin >> insert;
-        if (cin.fail() || value <= 0 || value == ' ') {
-            cout << "Invalid input. Value must be a non-negative number. Please try again." << endl;
+        if (cin.fail() || insert == ' ') {
+            cout << "Invalid input. Try again." << endl;
             cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
         } else {
             return insert;
         }
     }
 }
-
-class Word {
-    string secretWord;
-
-public:
-    void checkGuesses() {
-
-    }
-};
-
-class Player {
-
-public:
-
-};
-
-class Game {
-
-public:
-
-};
-
-
-class CategoryManager {
-private:
-
-public:
-
-};
