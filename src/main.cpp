@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include "function.h"
 using namespace std;
 
 /**
@@ -11,15 +11,12 @@ void wait() {
     cin.get();
 }
 
-/**
- * @brief start up menu interface 
- */
 void startMenu() {
-    cout << "Hello World!" << endl;
+    cout << "Hello World...";
     wait();
 }
 
-int main()
-{
-    startMenu();
+int main() {
+    runGame();
+    return 0;
 }
