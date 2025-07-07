@@ -41,8 +41,8 @@ int input(int value) {
         if (cin.fail() || insert < 0) {
             cout << "Invalid input. Value must be a non-negative number. Please try again." << endl;
             cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
         } else {
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             return insert;
         }
     }
@@ -50,7 +50,6 @@ int input(int value) {
 
 string input(string value) {
     string insert;
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
     while (true) {
         cout << value;
         getline(cin, insert);
@@ -71,6 +70,7 @@ char input(char value) {
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
         } else {
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             return insert;
         }
     }

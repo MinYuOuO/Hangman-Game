@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 using namespace std;
-std::string input(std::string value);
+
 //Menu
 
 /**
@@ -39,17 +39,20 @@ public:
 
 class Player {
 public:
-    int id;
-    string name;
+    string name[2];
+    int chances[2];
 
     Player() {
-        id = 1;
-        name = "";
+        name[0] = "";
     }
 
-    Player(int i) : id(i) {}
+    Player(int i) {
+        name[i];
+    }
 
-    Player(int i, string n) : id(i), name(n) {} 
+    Player(int i, string n) {
+        name[i] = n;
+    } 
 };
 
 class Game;

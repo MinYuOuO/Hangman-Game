@@ -4,6 +4,7 @@
 using namespace std;
 
 void startMenu() {
+    system("cls");
     title();
     cout << "Welcome to Hangman! Please select your mode" << endl;
     cout << "[1] Single player   (vs. computer)" << endl;
@@ -11,7 +12,8 @@ void startMenu() {
     cout << "Select mode number : ";
 
     int mode;
-    mode = input(mode);
+    mode = input(2);
+    cin.clear();
 
     system("cls"); // system command clear screen
 
@@ -19,19 +21,19 @@ void startMenu() {
     cout << "=====================  M O D E   S E L E C T E D  :  " << mode << "  =====================" << endl;
     
     if (mode == 1) {
-        Player player(1);
+        Player player;
 
         cout << "Please enter your name: ";
-        player.name = input(player.name);
-        cout << "\nGood luck in your game later, player " << player.name << "!" << endl;
+        player.name[0] = input("");
+        cout << "\nGood luck in your game later, player " << player.name[0] << "!" << endl;
 
-        wait(2.0);
+        wait(1.0);
 
         system("cls");
 
         title();
 
-        cout << "Player " << player.name << ",\n\n";
+        cout << "Player " << player.name[0] << ",\n\n";
         cout << "Please choose a category:\n";
         cout << "[1] Food\n";
         cout << "[2] Country\n";
@@ -39,7 +41,7 @@ void startMenu() {
         cout << "Category number : ";
 
         int category;
-        category = input(category);
+        category = input(3);
 
         wait(1.0);
 
@@ -48,19 +50,18 @@ void startMenu() {
         cout << "Before you start, remember the answer consists of 6 alphabets.\n" << endl;
         cout << "Make sure you answer in UPPERCASE ! !\n" << endl;
 
-        wait(5.0);
+        wait(2.0);
 
     } else if (mode == 2) {
-        Player player1(1);
-        Player player2(2);
+        Player player(1);
 
-        cout << "Please enter your name\n";
+        cout << "Please enter your name" << endl;
         cout << "Player 1 : ";
-        player1.name = input(player1.name);
+        player.name[0] = input("");
 
         cout << "Player 2 : ";
-        player2.name = input(player2.name);
-        cout << "\nGood luck in your game later, player " << player1.name << " and player " << player2.name << "!" << endl;
+        player.name[1] = input("");
+        cout << "\nGood luck in your game later, player " << player.name[0] << " and player " << player.name[1] << "!" << endl;
 
     } else {
         cout << "Invalid mode..." << endl;
