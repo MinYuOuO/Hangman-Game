@@ -48,6 +48,7 @@ char input(char value);
 // Attribute for secret word, revealed letters; methods to check guesses, update revealed word, check if fully guessed.
 class Word {
 public:
+    string secretWord;
     void checkGuesses();
 };
 
@@ -73,9 +74,21 @@ public:
 // @brief Manages game flow, word selection, interaction with Word and Player objects, user input, game state, win/loss conditions.
 class Game { 
 public:
-    string secretWord;
+    virtual void start() = 0;
+    virtual ~Game() = default;
 };
 
+class SinglePlayerGame : public Game {
+public:
+    void start() override;
+    // Add single player specific members and methods
+};
+
+class TwoPlayerSetupGame : public Game {
+public:
+    void start() override;
+    // Add two player specific members and methods
+};
 
 // @brief Manages categories and word list
 class CategoryManager {

@@ -5,7 +5,86 @@ using namespace std;
 
 CategoryManager categoryManager;
 
-void startMenu() {
+void Game::start() {
+
+}
+
+void SinglePlayerGame::start() {
+Player player;
+
+    while (true) {
+        cout << "Please enter your name: ";
+        player.name[0] = input("");
+        cout << "\nGood luck in your game later, player " << player.name[0] << "!" << endl;
+
+        wait(1.0);
+
+        system("cls");
+
+        title();
+
+        cout << "Player " << player.name[0] << ",\n\n";
+        cout << "Please choose a category:\n";
+        cout << "[1] Food\n";
+        cout << "[2] Country\n";
+        cout << "[3] Comp. Science\n\n";
+        cout << "Category number : ";
+
+        int category;
+        category = input(3);
+
+        Word room;
+
+        switch (category)
+        {
+        case 1:
+            room.secretWord = categoryManager.getRandomWord("Food");
+            break;
+            
+        case 2:
+            room.secretWord = categoryManager.getRandomWord("Country");
+            break;
+
+        case 3:
+            room.secretWord = categoryManager.getRandomWord("Comp. Science");
+            break;
+
+        default:
+            cout << "Invalid Error, Restarting..." << endl;
+            wait(2.0);
+            continue;
+        }
+
+        wait(1.0);
+
+        cout << "=====================  C A T E G O R Y   S E L E C T E D  :  " << category << "  =====================" << endl;
+
+        cout << "Before you start, remember the answer consists of 6 alphabets.\n" << endl;
+        cout << "Make sure you answer in UPPERCASE ! !\n" << endl;
+
+        wait(2.0);
+
+        system("cls");
+
+        title();
+
+        wait(2.0);
+    }
+}
+
+void TwoPlayerSetupGame::start() {
+    Player player(1);
+
+    cout << "Please enter your name" << endl;
+    cout << "Player 1 : ";
+    player.name[0] = input("");
+
+    cout << "Player 2 : ";
+    player.name[1] = input("");
+    cout << "\nGood luck in your game later, player " << player.name[0] << " and player " << player.name[1] << "!" << endl;
+}
+
+int main() {
     while (true) {
         system("cls");
         title();
@@ -25,76 +104,13 @@ void startMenu() {
         cout << "=====================  M O D E   S E L E C T E D  :  " << mode << "  =====================" << endl;
         
         if (mode == 1) {
-            Player player;
-
-            cout << "Please enter your name: ";
-            player.name[0] = input("");
-            cout << "\nGood luck in your game later, player " << player.name[0] << "!" << endl;
-
-            wait(1.0);
-
-            system("cls");
-
-            title();
-
-            cout << "Player " << player.name[0] << ",\n\n";
-            cout << "Please choose a category:\n";
-            cout << "[1] Food\n";
-            cout << "[2] Country\n";
-            cout << "[3] Comp. Science\n\n";
-            cout << "Category number : ";
-
-            int category;
-            category = input(3);
-
-            Game room;
-
-            switch (category)
-            {
-            case 1:
-                room.secretWord = categoryManager.getRandomWord("Food");
-                break;
-            
-            case 2:
-                room.secretWord = categoryManager.getRandomWord("Country");
-                break;
-
-            case 3:
-                room.secretWord = categoryManager.getRandomWord("Comp. Science");
-                break;
-
-            default:
-                cout << "Invalid Error, Restarting..." << endl;
-                wait(2.0);
-                continue;
-            }
-
-            wait(1.0);
-
-            cout << "=====================  C A T E G O R Y   S E L E C T E D  :  " << category << "  =====================" << endl;
-
-            cout << "Before you start, remember the answer consists of 6 alphabets.\n" << endl;
-            cout << "Make sure you answer in UPPERCASE ! !\n" << endl;
-
-            wait(2.0);
-
-            system("cls");
-
-            title();
-
-            wait(2.0);
-
+            Game* game = new SinglePlayerGame();
+            game->start();
+            delete game;
         } else if (mode == 2) {
-            Player player(1);
-
-            cout << "Please enter your name" << endl;
-            cout << "Player 1 : ";
-            player.name[0] = input("");
-
-            cout << "Player 2 : ";
-            player.name[1] = input("");
-            cout << "\nGood luck in your game later, player " << player.name[0] << " and player " << player.name[1] << "!" << endl;
-
+            Game* game = new TwoPlayerSetupGame();
+            game->start();
+            delete game;
         } else if (mode == 3) {
             displayExitMessage();
             break;
@@ -103,9 +119,5 @@ void startMenu() {
             wait();
         }
     }
-}
-
-int main() {
-    startMenu();
     return 0;
 }
