@@ -81,7 +81,7 @@ void SinglePlayerGame::start() {
             cout << "=========" << endl;
             cout << "" << endl;
             
-            char c;
+            char c = '\0';
             cout << "Letter: ";
             c = input(c);
             bool found = false;
