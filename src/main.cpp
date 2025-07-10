@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "function.h"
+#include <SFML/Window.hpp>
 
 using namespace std;
 
@@ -133,6 +134,7 @@ void TwoPlayerSetupGame::start() {
 }
 
 int main() {
+    sf::Window window(sf::VideoMode({800, 600}), "My window");
     while (true) {
         system("cls");
         title();
