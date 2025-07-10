@@ -31,7 +31,7 @@ int main() {
     if (!backgroundMusic.openFromFile("background_music.wav")) {
         cerr << "Failed to load background music.\n";
     } else {
-        backgroundMusic.setLoop(true);
+        backgroundMusic.setLooping(true);
         backgroundMusic.play();
     }
 
