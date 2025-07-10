@@ -7,7 +7,7 @@ using namespace std;
 CategoryManager categoryManager;
 
 void SinglePlayerGame::start() {
-Player player;
+    Player player;
 
     while (true) {
         cout << "Please enter your name: ";
@@ -59,11 +59,12 @@ Player player;
         cout << "Before you start, remember the answer consists of 6 alphabets.\n" << endl;
         cout << "Make sure you answer in UPPERCASE ! !\n" << endl;
 
-        title();
+        wait(2.0);
+
         cout << "\n\n\n" << endl;
         string masked(room.secretWord.length(), '*');
 
-        int chances = 20;
+        int chances = 15;
         bool guessed = false;
 
         while (chances > 0 && guessed == false) {
@@ -71,7 +72,7 @@ Player player;
             title();
             cout << "\n\n" << endl;
             cout << "  +---+" << endl;
-            cout << "  |   |" << endl;
+               cout << "  |   |" << endl;
             cout << "      |            Chances left: "<< chances << endl;
             cout << "      |            Word: " << masked << endl;
             cout << "      |" << endl;
@@ -85,14 +86,13 @@ Player player;
             bool found = false;
             for (int i = 0; i < room.secretWord.length(); i++) {
                 // room.checkGuesses();
-                if (room.secretWord[i] == toupper(c)) { // HERE HAVE BUGGGGGGGG
+                if (room.secretWord[i] == toupper(c)) {
                     masked[i] = room.secretWord[i];
                     found = true;
-                } else {
-                    found = false;
-                    chances--;
-                    break;
                 }
+            }
+            if (!found) {
+                chances--;
             }
             guessed = (masked == room.secretWord);
         }
@@ -104,7 +104,7 @@ Player player;
         if (guessed) {
             cout << "You Win! The word is: " << room.secretWord << endl;
             wait();
-            return ;
+            break;
         } else {
 
             cout << "  +---+" << endl;
@@ -115,10 +115,8 @@ Player player;
             cout << "      |" << endl;
             cout << "=========" << endl;
             wait();
-            return ;
+            break;
         }
-        
-        wait(2.0);
     }
 }
 
