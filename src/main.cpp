@@ -17,7 +17,7 @@ void SinglePlayerGame::start() {
         wait(1.0);
 
         system("cls");
-
+        
         title();
 
         cout << "Player " << player.name[0] << ",\n\n";
@@ -168,4 +168,4 @@ int main() {
         }
     }
     return 0;
-}
+} 
