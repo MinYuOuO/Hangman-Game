@@ -40,6 +40,8 @@ void SinglePlayerGame::start() {
 
         wait(1.0);
 
+        cout << "\n" << endl;
+
         cout << "=====================  C A T E G O R Y   S E L E C T E D  :  " << categoryName << "  =====================" << endl;
 
         cout << "Before you start, remember the answer consists of 6 alphabets.\n" << endl;
@@ -57,14 +59,14 @@ void SinglePlayerGame::start() {
             system("cls");
             title();
             cout << "\n\n" << endl;
-            cout << "  +---+" << endl;
-            cout << "  |   |            Subject: " << categoryName << endl;
-            cout << "      |            Chances left: " << chances << endl;
-            cout << "      |            Word: " << masked << endl;
-            cout << "      |" << endl;
-            cout << "      |" << endl;
-            cout << "=========" << endl;
-            cout << "" << endl;
+            cout << setfill(' ') << setw(10) << "  +---+" << endl;
+            cout << setfill(' ') << setw(10) << "  |   |" << setw(30) << "Subject: " << categoryName << endl;
+            cout << setfill(' ') << setw(10) << "      |" << setw(30) << "Chances left: " << chances << endl;
+            cout << setfill(' ') << setw(10) << "      |" << setw(30) << "Word: " << masked << endl;
+            cout << setfill(' ') << setw(10) << "      |" << endl;
+            cout << setfill(' ') << setw(10) << "      |" << endl;
+            cout << setfill(' ') << setw(12) << "=========" << endl;
+            cout << "\n\n" << endl;
             
             char c = '\0';
             cout << "Letter: ";
@@ -88,18 +90,18 @@ void SinglePlayerGame::start() {
         title();
         cout << "\n\n" << endl;
         if (guessed) {
-            cout << "You Win! The word is: " << room.secretWord << endl;
+            cout << setw(50) << "You Win! The word is: " << room.secretWord << endl;
             wait();
             break;
         } else {
-
-            cout << "  +---+" << endl;
-            cout << "  |   |" << endl;
-            cout << "  O   |            You Loose! The word is:" << room.secretWord << endl;
-            cout << " /|/  |" << endl;
-            cout << " / /  |" << endl;
-            cout << "      |" << endl;
-            cout << "=========" << endl;
+            cout.fill(' ');
+            cout << setfill(' ') << setw(10) << "  +---+" << endl;
+            cout << setfill(' ') << setw(10) << "  |   |" << endl;
+            cout << setfill(' ') << setw(10) << "  O   | "<< setw(10) << "You Loose! The word is:" << room.secretWord << endl;
+            cout << setfill(' ') << setw(10) << " /|/  |" << endl;
+            cout << setfill(' ') << setw(10) << " / /  |" << endl;
+            cout << setfill(' ') << setw(10) << "      |" << endl;
+            cout << setfill(' ') << setw(12) << "=========" << endl;
             wait();
             break;
         }

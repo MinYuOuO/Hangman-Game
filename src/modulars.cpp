@@ -1,25 +1,37 @@
 #include <iostream>
+#include <string>
 #include <conio.h>
 #include <ctime>
-#include <string>
-#include "function.h"
 #include <limits>
+#include <iomanip>
+#include "function.h"
 
 using namespace std;
 
+void printCentered(string text, int width, char fillChar = ' ') {
+    int padding = (width - text.length()) / 2;
+    cout << setfill(fillChar) << setw(padding + text.length()) << text << setw(width - (padding + text.length())) << "" << endl;
+}
+
 void title() {
-    cout << "=============================================================================" << endl;
-    cout << "===========================  H  A  N  G  M  A  N  ===========================" << endl;
-    cout << "=============================================================================\n" << endl;
+    const int width = 77;
+
+    cout << setfill('=') << setw(width) << "=" << endl;
+    printCentered("H  A  N  G  M  A  N", width);
+    cout << setfill('=') << setw(width) << "=" << endl;
+    cout << endl;
 }
 
 void displayExitMessage() {
-    cout << "=============================================================================" << endl;
-    cout << "===========================  T H A N K   Y O U  =============================" << endl;
-    cout << "=========================  F O R   P L A Y I N G  ===========================" << endl;
-    cout << "============================  H A N G M A N  ================================" << endl;
-    cout << "=========================  ~ Game Terminated ~  =============================" << endl;
-    cout << "=============================================================================\n" << endl;
+    const int width = 77;
+
+    cout << setfill('=') << setw(width) << "=" << endl;
+    printCentered("T H A N K   Y O U", width);
+    printCentered("F O R   P L A Y I N G", width);
+    printCentered("H A N G M A N", width);
+    printCentered("~ Game Terminated ~", width);
+    cout << setfill('=') << setw(width) << "=" << endl;
+    cout << endl;
 }
 
 void wait() {
