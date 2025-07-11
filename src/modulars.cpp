@@ -119,3 +119,22 @@ string CategoryManager::getRandomWord(const string category) {
     }
     return ""; // if category not found or has no words
 }
+
+void displayRules() {
+    system("cls");
+    std::cout << "================================ H A N G M A N ================================" << std::endl;
+    std::cout << "Now, let's learn the rules of playing hangman before you proceed!" << std::endl;
+    std::cout << std::endl;
+    std::cout << "GAME RULES :" << std::endl;
+    std::cout << "1. This game mode requires 1 player only" << std::endl;
+    std::cout << "2. The computer will generate a word from your chosen category" << std::endl;
+    std::cout << "3. You need to guess the word by trying one alphabet or the whole word" << std::endl;
+    std::cout << "4. Careful with your answer because you only have 4 chances per round" << std::endl;
+    std::cout << "5. If you fail to guess the word after finishing all the chances" << std::endl;
+    std::cout << "6. you will be hung and game will be terminated!" << std::endl;
+    std::cout << std::endl;
+    std::cout << "GOOD LUCK!!" << std::endl;
+    std::cout << "Press any key to continue . . ." << std::endl;
+    std::cin.get();
+    system("cls");
+}

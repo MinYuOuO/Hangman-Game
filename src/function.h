@@ -45,6 +45,11 @@ string input(string value);
  */
 char input(char value);
 
+/**
+ * @brief Displays the rules and regulations of the Hangman game.
+ */
+void displayRules();
+
 // Attribute for secret word, revealed letters; methods to check guesses, update revealed word, check if fully guessed.
 class Word {
 public:

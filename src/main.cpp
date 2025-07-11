@@ -135,18 +135,18 @@ int main() {
         cout << "Welcome to Hangman! Please select your mode" << endl;
         cout << "[1] Single player   (vs. computer)" << endl;
         cout << "[2] Two player      (vs. each other)" << endl;
-        cout << "[3] Quit Game" << endl;
+        cout << "[3] Rules and Regulations" << endl;
+        cout << "[4] Quit Game" << endl;
         cout << "Select mode number : ";
 
         int mode;
-        mode = input(3);
+        mode = input(4); // Updated to allow input up to 4
         cin.clear();
 
-        system("cls"); // system command clear screen
-
+        system("cls");
         title();
         cout << "=====================  M O D E   S E L E C T E D  :  " << mode << "  =====================" << endl;
-        
+
         if (mode == 1) {
             Game* game = new SinglePlayerGame();
             game->start();
@@ -156,6 +156,8 @@ int main() {
             game->start();
             delete game;
         } else if (mode == 3) {
+            displayRules();
+        } else if (mode == 4) {
             displayExitMessage();
             break;
         } else {
@@ -164,4 +166,4 @@ int main() {
         }
     }
     return 0;
-} 
+}
