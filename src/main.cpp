@@ -24,13 +24,13 @@ void SinglePlayerGame::start() {
         cout << "Player " << player.name[0] << ",\n" << endl;
         cout << "Please choose a category:" << endl;
         
-        for (size_t i = 0; i < 2; i++)
-            cout << "["<< i <<"] " << categoryManager.getCategoryName(i) << endl;
+        for (size_t i = 0; i <= 2; i++)
+            cout << "["<< i+1 <<"] " << categoryManager.getCategoryName(i) << endl;
         
         cout << "Category number : ";
 
         int category = 0;
-        category = input(3);
+        category = input(3) - 1;
 
         Word room;
 
@@ -40,7 +40,7 @@ void SinglePlayerGame::start() {
 
         wait(1.0);
 
-        cout << "=====================  C A T E G O R Y   S E L E C T E D  :  " << category << "  =====================" << endl;
+        cout << "=====================  C A T E G O R Y   S E L E C T E D  :  " << categoryName << "  =====================" << endl;
 
         cout << "Before you start, remember the answer consists of 6 alphabets.\n" << endl;
         cout << "Make sure you answer in UPPERCASE ! !\n" << endl;
@@ -58,7 +58,7 @@ void SinglePlayerGame::start() {
             title();
             cout << "\n\n" << endl;
             cout << "  +---+" << endl;
-            cout << "  |   |            Subject: " << "" << endl;
+            cout << "  |   |            Subject: " << categoryName << endl;
             cout << "      |            Chances left: " << chances << endl;
             cout << "      |            Word: " << masked << endl;
             cout << "      |" << endl;
