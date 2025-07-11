@@ -21,7 +21,6 @@ add_executable(Hangman
 )
 
 target_link_libraries(Hangman
-    SFML::Graphics 
-    SFML::Window
     SFML::Audio 
+    SFML::Network
 )

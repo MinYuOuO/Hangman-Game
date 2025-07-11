@@ -55,8 +55,8 @@ public:
 // Attributes for user, methods to record guesses.
 class Player {
 public:
-    string name[3];
-    int chances[3];
+    string name[2];
+    int chances[2];
 
     Player() {
         name[0] = "";
@@ -90,13 +90,25 @@ public:
     // Add two player specific members and methods
 };
 
-// @brief Manages categories and word list
+// @brief Responsible for managing word categories and providing utilities to access category information and randomly retrieve words from each category
 class CategoryManager {
+    // @brief Stores category names in insertion order
+    vector<string> categoriesName;
+
+    // @brief Maps each category name to its list of associated words
     map<string, vector<string>> categories;
 public:
     CategoryManager();
+    
+    string getCategoryName(const int categoryID);
 
+    // @brief a list of all category names in alphabetical order
     vector<string> getCategoryList() const;
 
+    /**
+     * @brief Get the Random Word object
+     * @param category the specified category
+     * @return string category, a random word from the specified category.
+     */
     string getRandomWord(const string category);
 };

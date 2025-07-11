@@ -77,9 +77,10 @@ char input(char value) {
 }
 
 CategoryManager::CategoryManager() {
-    categories["Food"] = {"PIZZA", "BURGER", "SUSHI", "NOODLE"};
-    categories["Country"] = {"CANADA", "BRAZIL", "FRANCE", "JAPAN"};
-    categories["Comp. Science"] = {"PYTHON", "ALGORITHM", "BINARY", "OBJECT"};
+    categoriesName = {"Food", "Country", "Comp. Science"};
+    categories[categoriesName[0]] = {"PIZZA", "BURGER", "SUSHI", "NOODLE"};
+    categories[categoriesName[1]] = {"CANADA", "BRAZIL", "FRANCE", "JAPAN"};
+    categories[categoriesName[2]] = {"PYTHON", "ALGORITHM", "BINARY", "OBJECT"};
 }
 
 vector<string> CategoryManager::getCategoryList() const {
@@ -88,6 +89,13 @@ vector<string> CategoryManager::getCategoryList() const {
         categoryList.push_back(pair.first);
     }
     return categoryList;
+}
+
+string CategoryManager::getCategoryName(int categoryID) {
+    if (categoryID < 0 || categoryID >= categoriesName.size()) {
+        return "";
+    }
+    return categoriesName[categoryID];
 }
 
 string CategoryManager::getRandomWord(const string category) {

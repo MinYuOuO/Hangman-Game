@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
 #include "function.h"
-#include <SFML/Window.hpp>
+#include <SFML/Audio.hpp>
 
 using namespace std;
 
@@ -21,37 +21,22 @@ void SinglePlayerGame::start() {
         
         title();
 
-        cout << "Player " << player.name[0] << ",\n\n";
-        cout << "Please choose a category:\n";
-        cout << "[1] Food\n";
-        cout << "[2] Country\n";
-        cout << "[3] Comp. Science\n\n";
+        cout << "Player " << player.name[0] << ",\n" << endl;
+        cout << "Please choose a category:" << endl;
+        
+        for (size_t i = 0; i < 2; i++)
+            cout << "["<< i <<"] " << categoryManager.getCategoryName(i) << endl;
+        
         cout << "Category number : ";
 
-        int category;
+        int category = 0;
         category = input(3);
 
         Word room;
 
-        switch (category)
-        {
-        case 1:
-            room.secretWord = categoryManager.getRandomWord("Food");
-            break;
-            
-        case 2:
-            room.secretWord = categoryManager.getRandomWord("Country");
-            break;
+        string categoryName = categoryManager.getCategoryName(category);
 
-        case 3:
-            room.secretWord = categoryManager.getRandomWord("Comp. Science");
-            break;
-
-        default:
-            cout << "Invalid Error, Restarting..." << endl;
-            wait(2.0);
-            continue;
-        }
+        room.secretWord = categoryManager.getRandomWord(categoryName);
 
         wait(1.0);
 
@@ -73,8 +58,8 @@ void SinglePlayerGame::start() {
             title();
             cout << "\n\n" << endl;
             cout << "  +---+" << endl;
-               cout << "  |   |" << endl;
-            cout << "      |            Chances left: "<< chances << endl;
+            cout << "  |   |            Subject: " << "" << endl;
+            cout << "      |            Chances left: " << chances << endl;
             cout << "      |            Word: " << masked << endl;
             cout << "      |" << endl;
             cout << "      |" << endl;
@@ -134,7 +119,14 @@ void TwoPlayerSetupGame::start() {
 }
 
 int main() {
-    sf::Window window(sf::VideoMode({800, 600}), "My window");
+    sf::Music backgroundMusic;
+    if (!backgroundMusic.openFromFile("audio/background_music.wav")) {
+        cerr << "Failed to load background music." << endl;
+    } else {
+        backgroundMusic.setLooping(true);
+        backgroundMusic.play();
+    }
+
     while (true) {
         system("cls");
         title();
