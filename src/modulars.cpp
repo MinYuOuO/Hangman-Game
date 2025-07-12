@@ -120,6 +120,8 @@ string CategoryManager::getRandomWord(const string category) {
 
 
 void displayHangmanState(const string& categoryName, int chances, const string& masked) {
+    system("cls");
+    title();
     cout << "\n\n" << endl;
     cout << setfill(' ') << setw(10) << "  +---+" << endl;
     cout << setfill(' ') << setw(10) << "  |   |" << setw(30) << "Subject: " << categoryName << endl;
@@ -132,9 +134,11 @@ void displayHangmanState(const string& categoryName, int chances, const string& 
 }
 
 void displayGameResult(bool guessed, const string& secretWord) {
+    system("cls");
+    title();
     cout << "\n\n" << endl;
     if (guessed) {
-        cout << setw(50) << "You Win! The word is: " << secretWord << endl;
+        cout << setfill(' ') << setw(50) << "You Win! The word is: " << secretWord << endl;
     } else {
         cout.fill(' ');
         cout << setfill(' ') << setw(10) << "  +---+" << endl;
@@ -169,6 +173,9 @@ bool processGuess(const string& secretWord, string& masked, int& chances) {
 }
 
 void showCategoryMenu(const string& playerName, CategoryManager& manager) {
+    system("cls");
+    title();
+    cout << "\n\n" << endl;
     cout << "Player " << playerName << ",\n" << endl;
     cout << "Please choose a category:" << endl;
 
@@ -180,10 +187,6 @@ void showCategoryMenu(const string& playerName, CategoryManager& manager) {
 }
 
 void displayRules() {
-    system("cls");
-    const int width = 77;
-    printCentered("H  A  N  G  M  A  N", width);
-    
     cout << "Now, let's learn the rules of playing hangman before you proceed!" << endl;
     cout << endl;
     cout << "GAME RULES :" << endl;
@@ -194,14 +197,14 @@ void displayRules() {
     cout << "5. If you fail to guess the word after all chances, the game ends" << endl;
     cout << endl;
     cout << "GOOD LUCK!!" << endl;
+
     wait();
     system("cls");
 }
 
 void displayTwoPlayerRules() {
     system("cls");
-    const int width = 77;
-    printCentered("H  A  N  G  M  A  N", width);
+    title();
 
     cout << "Now, let's learn the rules of playing hangman before you proceed!" << endl;
     cout << endl;
@@ -216,6 +219,7 @@ void displayTwoPlayerRules() {
     cout << "8. The game ends with a ranking display" << endl;
     cout << endl;
     cout << "GOOD LUCK!!" << endl;
+
     wait();
     system("cls");
 }
@@ -223,9 +227,7 @@ void displayTwoPlayerRules() {
 void displayTurnMessage(const string& playerName, const string& opponentName) {
     cout << "Player " << playerName << "," << endl;
     cout << "kindly face away while " << opponentName << " is typing." << endl;
-    cout << "Press any key to continue . . ." << endl;
-    cin.get();
-    system("cls");
+    wait();
 }
 
 void displayHintAndWord(const string& hint, const string& maskedWord, int chances) {

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <algorithm>
 #include "function.h"
 #include <SFML/Audio.hpp>
 
@@ -11,16 +12,16 @@ void SinglePlayerGame::start() {
     Player player;
 
     while (true) {
+        system("cls");
+        title();
+
         cout << "Please enter your name: ";
         player.name[0] = input("");
+
         cout << "\nGood luck in your game later, player " << player.name[0] << "!" << endl;
 
         wait(1.0);
 
-        system("cls");
-        title();
-
-        cout << "Player " << player.name[0] << ",\n\n";
         showCategoryMenu(player.name[0], categoryManager);
         int category = input(3) - 1;
 
@@ -44,22 +45,21 @@ void SinglePlayerGame::start() {
         bool guessed = false;
 
         while (chances > 0 && !guessed) {
-            system("cls");
-            title();
             displayHangmanState(categoryName, chances, masked);
-            
             guessed = processGuess(room.secretWord, masked, chances);
         }
 
-        system("cls");
-
         displayGameResult(guessed, room.secretWord);
+
+        break;
     }
 }
 
 void TwoPlayerSetupGame::start() {
     Player player(1);
 
+    title();
+    cout << "\n\n" << endl;
     cout << "Please enter your name" << endl;
     cout << "Player 1 : ";
     player.name[0] = input("");

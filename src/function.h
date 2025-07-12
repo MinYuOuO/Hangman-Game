@@ -53,11 +53,6 @@ void displayTurnMessage(const string& playerName, const string& opponentName);
 void displayHintAndWord(const string& hint, const string& maskedWord, int chances);
 void updateScore(Player& player, bool win);
 
-void displayHangmanState(const string& categoryName, int chances, const string& masked);
-void displayGameResult(bool guessed, const string& secretWord);
-bool processGuess(const string& secretWord, string& masked, int& chances);
-void showCategoryMenu(const string& playerName, CategoryManager& manager);
-
 // Class declarations
 // Attribute for secret word, revealed letters; methods to check guesses, update revealed word, check if fully guessed.
 class Word {
@@ -109,3 +104,8 @@ public:
     vector<string> getCategoryList() const;
     string getRandomWord(const string category);
 };
+
+void displayHangmanState(const string& categoryName, int chances, const string& masked);
+void displayGameResult(bool guessed, const string& secretWord);
+bool processGuess(const string& secretWord, string& masked, int& chances);
+void showCategoryMenu(const string& playerName, CategoryManager& manager);
