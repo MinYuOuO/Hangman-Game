@@ -10,19 +10,50 @@ using namespace std;
 class Player;
 
 // Function declarations
+//@brief HANGMAN title
 void title();
 void displayExitMessage();
-void wait();
+
+//@brief Waits for the user to press any key to continue.
+void wait(); 
+
+/**
+ * @brief Pauses the program execution for a specified number of seconds.
+ * @param seconds The number of seconds to wait.
+ */
 void wait(float seconds);
+
+/**
+ * @brief Prompts the user to enter an integer value within a specified limit.
+ * @param limit The upper limit for the input value.
+ * @return int The validated integer input from the user.
+ */
 int input(int limit);
+
+/**
+ * @brief Prompts the user to enter a non-empty string.
+ * @param value The prompt message to display.
+ * @return string The validated string input from the user.
+ */
 string input(string value);
+
+/**
+ * @brief Prompts the user to enter a single character.
+ * @param value The prompt message to display.
+ * @return char The validated character input from the user.
+ */
 char input(char value);
-void displayRules(); // Single-player rules
-void displayTwoPlayerRules(); // Two-player rules
+
+// @brief Single-player rules
+void displayRules(); 
+
+// @brief Two-player rules
+void displayTwoPlayerRules(); 
 void displayTurnMessage(const string& playerName, const string& opponentName);
 void displayHintAndWord(const string& hint, const string& maskedWord, int chances);
 void updateScore(Player& player, bool win);
 
+// Class declarations
 // Attribute for secret word, revealed letters; methods to check guesses, update revealed word, check if fully guessed.
 class Word {
 public:
@@ -57,14 +88,16 @@ public:
     void start() override;
 };
 
+
 class TwoPlayerSetupGame : public Game {
 public:
     void start() override;
 };
 
+// @brief Responsible for managing word categories and providing utilities to access category information and randomly retrieve words from each category
 class CategoryManager {
-    vector<string> categoriesName;
-    map<string, vector<string>> categories;
+    vector<string> categoriesName; // @brief Stores category names in insertion order
+    map<string, vector<string>> categories; // @brief Maps each category name to its list of associated words
 public:
     CategoryManager();
     string getCategoryName(const int categoryID);

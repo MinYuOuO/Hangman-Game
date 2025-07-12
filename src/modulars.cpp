@@ -120,7 +120,9 @@ string CategoryManager::getRandomWord(const string category) {
 
 void displayRules() {
     system("cls");
-    cout << "================================ H A N G M A N ================================" << endl;
+    const int width = 77;
+    printCentered("H  A  N  G  M  A  N", width);
+    
     cout << "Now, let's learn the rules of playing hangman before you proceed!" << endl;
     cout << endl;
     cout << "GAME RULES :" << endl;
@@ -131,14 +133,15 @@ void displayRules() {
     cout << "5. If you fail to guess the word after all chances, the game ends" << endl;
     cout << endl;
     cout << "GOOD LUCK!!" << endl;
-    cout << "Press any key to continue . . ." << endl;
-    cin.get();
+    wait();
     system("cls");
 }
 
 void displayTwoPlayerRules() {
     system("cls");
-    cout << "================================ H A N G M A N ================================" << endl;
+    const int width = 77;
+    printCentered("H  A  N  G  M  A  N", width);
+    
     cout << "Now, let's learn the rules of playing hangman before you proceed!" << endl;
     cout << endl;
     cout << "GAME RULES :" << endl;
@@ -152,8 +155,7 @@ void displayTwoPlayerRules() {
     cout << "8. The game ends with a ranking display" << endl;
     cout << endl;
     cout << "GOOD LUCK!!" << endl;
-    cout << "Press any key to continue . . ." << endl;
-    cin.get();
+    wait();
     system("cls");
 }
 
