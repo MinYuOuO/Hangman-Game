@@ -20,9 +20,13 @@ void SinglePlayerGame::start() {
         system("cls");
         title();
 
-        cout << "Player " << player.name[0] << ",\n\n";
-        showCategoryMenu(player.name[0], categoryManager);
-        int category = input(3) - 1;
+        cout << "Player " << player.name[0] << ",\n" << endl;
+        cout << "Please choose a category:" << endl;
+        
+        for (size_t i = 0; i <= 2; i++)
+            cout << "[" << i + 1 << "] " << categoryManager.getCategoryName(i) << endl;
+        
+        cout << "Category number : ";
 
         int category = input(3) - 1;
 
@@ -48,19 +52,51 @@ void SinglePlayerGame::start() {
         while (chances > 0 && !guessed) {
             system("cls");
             title();
-
-            displayHangmanState(categoryName, chances, masked);
-
-            guessed = processGuess(room.secretWord, masked, chances);
-
+            cout << "\n\n" << endl;
+            cout << setfill(' ') << setw(10) << "  +---+" << endl;
+            cout << setfill(' ') << setw(10) << "  |   |" << setw(30) << "Subject: " << categoryName << endl;
+            cout << setfill(' ') << setw(10) << "      |" << setw(30) << "Chances left: " << chances << endl;
+            cout << setfill(' ') << setw(10) << "      |" << setw(30) << "Word: " << masked << endl;
+            cout << setfill(' ') << setw(10) << "      |" << endl;
+            cout << setfill(' ') << setw(10) << "      |" << endl;
+            cout << setfill(' ') << setw(12) << "=========" << endl;
+            cout << "\n\n" << endl;
+            
+            char c = '\0';
+            cout << "Letter: ";
+            c = input(c);
+            bool found = false;
+            for (int i = 0; i < room.secretWord.length(); i++) {
+                if (room.secretWord[i] == toupper(c)) {
+                    masked[i] = room.secretWord[i];
+                    found = true;
+                }
+            }
+            if (!found) {
+                chances--;
+            }
+            guessed = (masked == room.secretWord);
+        }
 
         system("cls");
         title();
-
-        displayGameResult(guessed, room.secretWord);
-        break;
-
-
+        cout << "\n\n" << endl;
+        if (guessed) {
+            cout << setw(50) << "You Win! The word is: " << room.secretWord << endl;
+            wait();
+            break;
+        } else {
+            cout.fill(' ');
+            cout << setfill(' ') << setw(10) << "  +---+" << endl;
+            cout << setfill(' ') << setw(10) << "  |   |" << endl;
+            cout << setfill(' ') << setw(10) << "  O   | " << setw(10) << "You Loose! The word is:" << room.secretWord << endl;
+            cout << setfill(' ') << setw(10) << " /|/  |" << endl;
+            cout << setfill(' ') << setw(10) << " / /  |" << endl;
+            cout << setfill(' ') << setw(10) << "      |" << endl;
+            cout << setfill(' ') << setw(12) << "=========" << endl;
+            wait();
+            break;
+        }
     }
 }
 

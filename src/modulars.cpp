@@ -118,66 +118,6 @@ string CategoryManager::getRandomWord(const string category) {
     return "";
 }
 
-void showCategoryMenu(const string& playerName, CategoryManager& manager) {
-    cout << "Player " << playerName << ",\n" << endl;
-    cout << "Please choose a category:" << endl;
-
-    for (size_t i = 0; i < manager.getCategoryList().size(); ++i) {
-        cout << "[" << i + 1 << "] " << manager.getCategoryName(i) << endl;
-    }
-
-    cout << "Category number : ";
-}
-
-void displayHangmanState(const string& categoryName, int chances, const string& masked) {
-    cout << "\n\n" << endl;
-    cout << setfill(' ') << setw(10) << "  +---+" << endl;
-    cout << setfill(' ') << setw(10) << "  |   |" << setw(30) << "Subject: " << categoryName << endl;
-    cout << setfill(' ') << setw(10) << "      |" << setw(30) << "Chances left: " << chances << endl;
-    cout << setfill(' ') << setw(10) << "      |" << setw(30) << "Word: " << masked << endl;
-    cout << setfill(' ') << setw(10) << "      |" << endl;
-    cout << setfill(' ') << setw(10) << "      |" << endl;
-    cout << setfill(' ') << setw(12) << "=========" << endl;
-    cout << "\n\n" << endl;
-}
-
-void displayGameResult(bool guessed, const string& secretWord) {
-    cout << "\n\n" << endl;
-    if (guessed) {
-        cout << setw(50) << "You Win! The word is: " << secretWord << endl;
-    } else {
-        cout.fill(' ');
-        cout << setfill(' ') << setw(10) << "  +---+" << endl;
-        cout << setfill(' ') << setw(10) << "  |   |" << endl;
-        cout << setfill(' ') << setw(10) << "  O   | " << setw(10) << "You Loose! The word is: " << secretWord << endl;
-        cout << setfill(' ') << setw(10) << " /|/  |" << endl;
-        cout << setfill(' ') << setw(10) << " / /  |" << endl;
-        cout << setfill(' ') << setw(10) << "      |" << endl;
-        cout << setfill(' ') << setw(12) << "=========" << endl;
-    }
-    wait();
-}
-
-bool processGuess(const string& secretWord, string& masked, int& chances) {
-    char c = '\0';
-    cout << "Letter: ";
-    c = input(c);
-    
-    bool found = false;
-    for (size_t i = 0; i < secretWord.length(); ++i) {
-        if (secretWord[i] == toupper(c)) {
-            masked[i] = secretWord[i];
-            found = true;
-        }
-    }
-
-    if (!found) {
-        chances--;
-    }
-
-    return masked == secretWord; 
-}
-
 void displayRules() {
     system("cls");
     cout << "================================ H A N G M A N ================================" << endl;
@@ -245,4 +185,3 @@ string Word::getMaskedWord() const {
     }
     return masked;
 }
-

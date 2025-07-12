@@ -71,12 +71,3 @@ public:
     vector<string> getCategoryList() const;
     string getRandomWord(const string category);
 };
-
-void displayHangmanState(const string& categoryName, int chances, const string& masked);
-
-void displayGameResult(bool guessed, const string& secretWord);
-
-bool processGuess(const string& secretWord, string& masked, int& chances);
-
-void showCategoryMenu(const string& playerName, CategoryManager& manager);
-
