@@ -15,7 +15,6 @@ void printCentered(string text, int width, char fillChar = ' ') {
 
 void title() {
     const int width = 77;
-
     cout << setfill('=') << setw(width) << "=" << endl;
     printCentered("H  A  N  G  M  A  N", width);
     cout << setfill('=') << setw(width) << "=" << endl;
@@ -24,7 +23,6 @@ void title() {
 
 void displayExitMessage() {
     const int width = 77;
-
     cout << setfill('=') << setw(width) << "=" << endl;
     printCentered("T H A N K   Y O U", width);
     printCentered("F O R   P L A Y I N G", width);
@@ -43,7 +41,7 @@ void wait() {
 void wait(float seconds) {
     clock_t startClock = clock();
     float secondsAhead = seconds * CLOCKS_PER_SEC;
-    while(clock() < startClock + secondsAhead);
+    while (clock() < startClock + secondsAhead);
 }
 
 int input(int limit) {
@@ -117,7 +115,7 @@ string CategoryManager::getRandomWord(const string category) {
         int idx = rand() % words.size();
         return words[idx];
     }
-    return ""; // if category not found or has no words
+    return "";
 }
 
 void showCategoryMenu(const string& playerName, CategoryManager& manager) {
@@ -179,3 +177,72 @@ bool processGuess(const string& secretWord, string& masked, int& chances) {
 
     return masked == secretWord; 
 }
+
+void displayRules() {
+    system("cls");
+    cout << "================================ H A N G M A N ================================" << endl;
+    cout << "Now, let's learn the rules of playing hangman before you proceed!" << endl;
+    cout << endl;
+    cout << "GAME RULES :" << endl;
+    cout << "1. This game mode requires 1 player only" << endl;
+    cout << "2. The computer will generate a word from your chosen category" << endl;
+    cout << "3. You need to guess the word by trying one alphabet or the whole word" << endl;
+    cout << "4. You have 15 chances to guess the word" << endl;
+    cout << "5. If you fail to guess the word after all chances, the game ends" << endl;
+    cout << endl;
+    cout << "GOOD LUCK!!" << endl;
+    cout << "Press any key to continue . . ." << endl;
+    cin.get();
+    system("cls");
+}
+
+void displayTwoPlayerRules() {
+    system("cls");
+    cout << "================================ H A N G M A N ================================" << endl;
+    cout << "Now, let's learn the rules of playing hangman before you proceed!" << endl;
+    cout << endl;
+    cout << "GAME RULES :" << endl;
+    cout << "1. This game mode requires two players" << endl;
+    cout << "2. Each player will type a word for the other to guess" << endl;
+    cout << "3. You need to guess the word by trying one alphabet or the whole word" << endl;
+    cout << "4. You have 4 chances per round" << endl;
+    cout << "5. If you fail to guess after all chances, your opponent scores" << endl;
+    cout << "6. Correct guesses earn you 4 points" << endl;
+    cout << "7. The game continues until someone reaches 5 points" << endl;
+    cout << "8. The game ends with a ranking display" << endl;
+    cout << endl;
+    cout << "GOOD LUCK!!" << endl;
+    cout << "Press any key to continue . . ." << endl;
+    cin.get();
+    system("cls");
+}
+
+void displayTurnMessage(const string& playerName, const string& opponentName) {
+    cout << "Player " << playerName << "," << endl;
+    cout << "kindly face away while " << opponentName << " is typing." << endl;
+    cout << "Press any key to continue . . ." << endl;
+    cin.get();
+    system("cls");
+}
+
+void displayHintAndWord(const string& hint, const string& maskedWord, int chances) {
+    cout << "Hi, " << hint << endl;
+    cout << "The word given by " << hint << " is something about => " << maskedWord << endl;
+    cout << "It consists of " << maskedWord.length() << " alphabets." << endl;
+    cout << "Make sure your answer in UPPERCASE !!" << endl;
+    cout << "You have " << chances << " chance(s)." << endl;
+    cout << "Try an alphabet [1] or the whole word [2] ? Your choice: ";
+}
+
+void updateScore(Player& player, bool win) {
+    if (win) player.setScore(player.getScore() + 4);
+}
+
+string Word::getMaskedWord() const {
+    string masked = secretWord;
+    for (char& c : masked) {
+        if (c != '*') c = '*';
+    }
+    return masked;
+}
+
