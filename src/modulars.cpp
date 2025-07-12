@@ -120,6 +120,17 @@ string CategoryManager::getRandomWord(const string category) {
     return ""; // if category not found or has no words
 }
 
+void showCategoryMenu(const string& playerName, CategoryManager& manager) {
+    cout << "Player " << playerName << ",\n" << endl;
+    cout << "Please choose a category:" << endl;
+
+    for (size_t i = 0; i < manager.getCategoryList().size(); ++i) {
+        cout << "[" << i + 1 << "] " << manager.getCategoryName(i) << endl;
+    }
+
+    cout << "Category number : ";
+}
+
 void displayHangmanState(const string& categoryName, int chances, const string& masked) {
     cout << "\n\n" << endl;
     cout << setfill(' ') << setw(10) << "  +---+" << endl;

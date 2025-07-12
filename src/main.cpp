@@ -21,13 +21,10 @@ void SinglePlayerGame::start() {
         
         title();
 
-        cout << "Player " << player.name[0] << ",\n" << endl;
-        cout << "Please choose a category:" << endl;
-        
-        for (size_t i = 0; i <= 2; i++)
-            cout << "["<< i+1 <<"] " << categoryManager.getCategoryName(i) << endl;
-        
-        cout << "Category number : ";
+        cout << "Player " << player.name[0] << ",\n\n";
+        showCategoryMenu(player.name[0], categoryManager);
+        int category = input(3) - 1;
+
 
         int category = 0;
         category = input(3) - 1;
