@@ -133,12 +133,18 @@ void TwoPlayerSetupGame::start() {
 
 int main() {
     sf::Music backgroundMusic;
-    if (!backgroundMusic.openFromFile("audio/background_music.wav")) {
+    if (!backgroundMusic.openFromFile("audio/background_music.wav"))
         cerr << "Failed to load background music." << endl;
-    } else {
-        backgroundMusic.setLooping(true);
-        backgroundMusic.play();
-    }
+
+    backgroundMusic.setLooping(true);
+    backgroundMusic.play();
+    title();
+    cout << "Hello World!" << endl;
+    wait(1.0);
+    cout << "\nGame production by Li Wei, Min Yu, Jia Jun and Ren Yi" << endl;
+    wait(1.0);
+    cout << "\n\n Background Music: “新世纪” by 在虚无中永存" << endl;
+    wait(3.0);
 
     while (true) {
         system("cls");
