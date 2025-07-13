@@ -18,9 +18,11 @@ FetchContent_MakeAvailable(SFML)
 add_executable(Hangman
     src/main.cpp
     src/modulars.cpp
+    src/server.cpp
 )
 
 target_link_libraries(Hangman
     SFML::Audio 
     SFML::Network
+    SFML::System
 )
