@@ -109,3 +109,6 @@ void displayHangmanState(const string& categoryName, int chances, const string& 
 void displayGameResult(bool guessed, const string& secretWord);
 bool processGuess(const string& secretWord, string& masked, int& chances);
 void showCategoryMenu(const string& playerName, CategoryManager& manager);
+
+
+void displayHangman(int wrongGuesses);

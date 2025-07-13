@@ -167,6 +167,7 @@ bool processGuess(const string& secretWord, string& masked, int& chances) {
 
     if (!found) {
         chances--;
+        displayHangman(15 - chances);
     }
 
     return masked == secretWord; 
@@ -251,3 +252,16 @@ string Word::getMaskedWord() const {
     }
     return masked;
 }
+
+void displayHangman(int wrongGuesses) {
+    cout << "  +---+" << endl;
+    cout << "  |   |" << endl;
+    cout << "  " << (wrongGuesses >= 1 ? "O" : " ") << "   |" << endl;
+    cout << " " << (wrongGuesses >= 3 ? "/" : " ") 
+         << (wrongGuesses >= 2 ? "|" : " ") 
+         << (wrongGuesses >= 4 ? "\\" : " ") << "  |" << endl;
+    cout << " " << (wrongGuesses >= 5 ? "/ \\" : "    ") << "  |" << endl;
+    cout << "      |" << endl;
+    cout << "=========" << endl << endl;
+}
+
