@@ -59,16 +59,16 @@ void TwoPlayerSetupGame::start() {
     Player player(1);
 
     title();
-    cout << "\n\n" << endl;
     cout << "Please enter your name" << endl;
     cout << "Player 1 : ";
     player.name[0] = input("");
-    cout << "Player 2 : ";
+    cout << "\n\nPlayer 2 : ";
     player.name[1] = input("");
-    cout << "\nGood luck in your game later, player " << player.name[0] << " and player " << player.name[1] << "!" << endl;
+    cout << "\nGood luck in your game later, player " << player.name[1] << " and player " << player.name[0] << "!" << endl;
 
     int currentPlayer = 0;
     int opponent = 1;
+
     while (player.getScore() < 5 && player.getScore() < 5) { // Simplified score check; adjust for both players
         displayTurnMessage(player.name[currentPlayer], player.name[opponent]);
 
@@ -84,6 +84,9 @@ void TwoPlayerSetupGame::start() {
         }
 
         cout << "You entered = [" << word << "]" << endl;
+        wait(1.0);
+        system("cls");
+
         // Removed hint input; using opponent's name instead
         Word room;
         room.secretWord = word;
@@ -95,35 +98,15 @@ void TwoPlayerSetupGame::start() {
         bool guessed = false;
 
         while (chances > 0 && !guessed) {
-            displayHintAndWord(player.name[opponent], masked, chances); // Use opponent's name as hint
-            int choice = input(2);
-            if (choice == 1) {
-                char c = '\0';
-                cout << "Letter: ";
-                c = input(c);
-                bool found = false;
-                for (size_t i = 0; i < room.secretWord.length(); i++) {
-                    if (room.secretWord[i] == toupper(c)) {
-                        masked[i] = room.secretWord[i];
-                        found = true;
-                    }
-                }
-                if (!found) chances--;
-                guessed = (masked == room.secretWord);
-            } else if (choice == 2) {
-                cout << "Guess the word: ";
-                string guess = input("");
-                transform(guess.begin(), guess.end(), guess.begin(), ::toupper);
-                if (guess == room.secretWord) guessed = true;
-                else chances--;
-            }
+            displayHangmanState("", chances, masked);
+            guessed = processGuess(room.secretWord, masked, chances);
         }
-
-        system("cls");
 
         displayGameResult(guessed, room.secretWord);
         
         swap(currentPlayer, opponent);
+
+        system("cls");
     }
 
     cout << "Game Over! Final Scores:" << endl;
@@ -138,12 +121,13 @@ int main() {
 
     backgroundMusic.setLooping(true);
     backgroundMusic.play();
+
     title();
     cout << "Hello World!" << endl;
     wait(1.0);
     cout << "\nGame production by Li Wei, Min Yu, Jia Jun and Ren Yi" << endl;
     wait(1.0);
-    cout << "\n\n Background Music: “新世纪” by 在虚无中永存" << endl;
+    cout << "\n\nBackground Music: “新世纪” by 在虚无中永存" << endl;
     wait(3.0);
 
     while (true) {

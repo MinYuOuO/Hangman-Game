@@ -228,6 +228,7 @@ void displayTurnMessage(const string& playerName, const string& opponentName) {
     cout << "Player " << playerName << "," << endl;
     cout << "kindly face away while " << opponentName << " is typing." << endl;
     wait();
+    system("cls");
 }
 
 void displayHintAndWord(const string& hint, const string& maskedWord, int chances) {
