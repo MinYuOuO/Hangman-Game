@@ -16,7 +16,7 @@ void printCentered(string text, int width, char fillChar = ' ') {
 void title() {
     const int width = 77;
     cout << setfill('=') << setw(width) << "=" << endl;
-    printCentered("H  A  N  G  M  A  N", width);
+    printCentered("H  A  N  G  M  A  N", width, '=');
     cout << setfill('=') << setw(width) << "=" << endl;
     cout << endl;
 }
@@ -125,9 +125,9 @@ void displayHangmanState(const string& categoryName, int chances, const string& 
     cout << "\n\n" << endl;
     cout << setfill(' ') << setw(10) << "  +---+" << endl;
     cout << setfill(' ') << setw(10) << "  |   |" << setw(30) << "Subject: " << categoryName << endl;
-    cout << setfill(' ') << setw(10) << "      |" << setw(30) << "Chances left: " << chances << endl;
-    cout << setfill(' ') << setw(10) << "      |" << setw(30) << "Word: " << masked << endl;
-    cout << setfill(' ') << setw(10) << "      |" << endl;
+    cout << "     " << (chances < 5 ? "O" : " ") << "   |" << setw(30) << "Chances left: " << chances << endl;
+    cout << "    " << (chances < 4 ? "/" : " ") << (chances < 3 ? "|" : " ") << (chances < 2 ? "/" : " ") << "  |" << setw(30) << "Word: " << masked << endl;
+    cout << "     " << (chances < 1 ? "/": " ") << (chances < 0 ? " /": "  ") << " |" << endl;
     cout << setfill(' ') << setw(10) << "      |" << endl;
     cout << setfill(' ') << setw(12) << "=========" << endl;
     cout << "\n\n" << endl;
@@ -143,7 +143,7 @@ void displayGameResult(bool guessed, const string& secretWord) {
         cout.fill(' ');
         cout << setfill(' ') << setw(10) << "  +---+" << endl;
         cout << setfill(' ') << setw(10) << "  |   |" << endl;
-        cout << setfill(' ') << setw(10) << "  O   | " << setw(10) << "You Loose! The word is: " << secretWord << endl;
+        cout << setfill(' ') << setw(11) << "  O   | " << setw(15) << "You Loose! The word is: " << secretWord << endl;
         cout << setfill(' ') << setw(10) << " /|/  |" << endl;
         cout << setfill(' ') << setw(10) << " / /  |" << endl;
         cout << setfill(' ') << setw(10) << "      |" << endl;
@@ -167,7 +167,6 @@ bool processGuess(const string& secretWord, string& masked, int& chances) {
 
     if (!found) {
         chances--;
-        displayHangman(15 - chances);
     }
 
     return masked == secretWord; 
@@ -176,7 +175,7 @@ bool processGuess(const string& secretWord, string& masked, int& chances) {
 void showCategoryMenu(const string& playerName, CategoryManager& manager) {
     system("cls");
     title();
-    cout << "\n\n" << endl;
+    cout << "" << endl;
     cout << "Player " << playerName << ",\n" << endl;
     cout << "Please choose a category:" << endl;
 
@@ -252,16 +251,3 @@ string Word::getMaskedWord() const {
     }
     return masked;
 }
-
-void displayHangman(int wrongGuesses) {
-    cout << "  +---+" << endl;
-    cout << "  |   |" << endl;
-    cout << "  " << (wrongGuesses >= 1 ? "O" : " ") << "   |" << endl;
-    cout << " " << (wrongGuesses >= 3 ? "/" : " ") 
-         << (wrongGuesses >= 2 ? "|" : " ") 
-         << (wrongGuesses >= 4 ? "\\" : " ") << "  |" << endl;
-    cout << " " << (wrongGuesses >= 5 ? "/ \\" : "    ") << "  |" << endl;
-    cout << "      |" << endl;
-    cout << "=========" << endl << endl;
-}
-

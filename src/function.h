@@ -14,6 +14,8 @@ class Player;
 void title();
 void displayExitMessage();
 
+void printCentered(string text, int width, char fillChar);
+
 //@brief Waits for the user to press any key to continue.
 void wait(); 
 
@@ -109,6 +111,3 @@ void displayHangmanState(const string& categoryName, int chances, const string& 
 void displayGameResult(bool guessed, const string& secretWord);
 bool processGuess(const string& secretWord, string& masked, int& chances);
 void showCategoryMenu(const string& playerName, CategoryManager& manager);
-
-
-void displayHangman(int wrongGuesses);

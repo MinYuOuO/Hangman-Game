@@ -4,6 +4,8 @@
 #include "function.h"
 #include <SFML/Audio.hpp>
 
+#include "server.h"
+
 using namespace std;
 
 CategoryManager categoryManager;
@@ -38,16 +40,15 @@ void SinglePlayerGame::start() {
 
         wait(2.0);
 
-        cout << "\n\n\n" << endl;
         string masked(room.secretWord.length(), '*');
 
-        int chances = 15;
+        int chances = 5;
         bool guessed = false;
+        int wrongGuesses;
 
         while (chances > 0 && !guessed) {
             displayHangmanState(categoryName, chances, masked);
             guessed = processGuess(room.secretWord, masked, chances);
- 
         }
         
         displayGameResult(guessed, room.secretWord);
@@ -94,9 +95,10 @@ void TwoPlayerSetupGame::start() {
 
         displayTurnMessage(player.name[opponent], player.name[currentPlayer]);
 
-        int chances = 4;
+        int chances = 5;
         string masked(room.secretWord.length(), '*');
         bool guessed = false;
+        int i;
 
         while (chances > 0 && !guessed) {
             displayHangmanState("", chances, masked);
@@ -116,6 +118,7 @@ void TwoPlayerSetupGame::start() {
 }
 
 int main() {
+    system("cls");
     sf::Music backgroundMusic;
     if (!backgroundMusic.openFromFile("audio/background_music.wav"))
         cerr << "Failed to load background music." << endl;
@@ -124,12 +127,15 @@ int main() {
     backgroundMusic.play();
 
     title();
-    cout << "Hello World!" << endl;
+    cout << "\n" << endl;
+    printCentered("Hello World!", 77, ' ');
     wait(1.0);
-    cout << "\nGame production by Li Wei, Min Yu, Jia Jun and Ren Yi" << endl;
+    cout << "\n\n\n\n" << endl;
+    printCentered("Game production by Li Wei, Min Yu, Jia Jun and Ren Yi", 77, ' ');
     wait(1.0);
-    cout << "\n\nBackground Music: “新世纪” by 在虚无中永存" << endl;
-    wait(3.0);
+    cout << "\n\n" << endl;
+    printCentered("Background Music: “新世纪” by 在虚无中永存", 77, ' ');
+    wait(1.5);
 
     while (true) {
         system("cls");
@@ -138,10 +144,11 @@ int main() {
         cout << "[1] Single player   (vs. computer)" << endl;
         cout << "[2] Two player      (vs. each other)" << endl;
         cout << "[3] Quit Game" << endl;
+        cout << "[4] Two player      (working in progress)" << endl;
         cout << "Select mode number : ";
 
         int mode;
-        mode = input(3);
+        mode = input(4);
         cin.clear();
 
         system("cls");
@@ -161,7 +168,50 @@ int main() {
         } else if (mode == 3) {
             displayExitMessage();
             break;
+        }else if (mode == 4) {
+            cout << "Please select an option " << endl;
+            cout << "[1] Open Room" << endl;
+            cout << "[2] Join Game" << endl;
+
+            int select;
+            select = input(2);
+
+            if (select == 1) {
+                TcpServer server(53000);
+                if (!server.start()) return -1;
+
+                while (true) {
+                    server.update();
+                }
+
+            } else if (select == 2) {
+                TcpClient client(53000);
+                const int maxRetries = 15;
+                int attempts = 0;
+
+                while (attempts < maxRetries && !client.discoverServer()) {
+                    cerr << "No response. Retrying (" << (attempts + 1) << "/" << maxRetries << ")..." << endl;
+                    attempts++;
+                }
+
+                if (attempts == maxRetries) {
+                    cerr << "Server not found: Timeout" << endl;
+                    return -1;
+                }
+
+                while (!client.connect()) {
+                    cerr << "Could not connect to server." << endl;
+                    return -1;
+                }
+
+                while (true) {
+                    client.update();
+                    client.sendMessage("Working...");
+                    wait(1);
+                }
+            }
         } else {
+            backgroundMusic.stop();
             cout << "Invalid Error, Restarting..." << endl;
             wait();
         }
