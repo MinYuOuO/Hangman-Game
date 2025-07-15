@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
-#include <algorithm>
+#include <utility>
+#include <fstream>
+#include <locale>
 #include "function.h"
 #include <SFML/Audio.hpp>
 
@@ -8,116 +10,8 @@
 
 using namespace std;
 
-CategoryManager categoryManager;
-
-void SinglePlayerGame::start() {
-    Player player;
-
-    while (true) {
-        system("cls");
-        title();
-
-        cout << "Please enter your name: ";
-        player.name[0] = input("");
-
-        cout << "\nGood luck in your game later, player " << player.name[0] << "!" << endl;
-
-        wait(1.0);
-
-        showCategoryMenu(player.name[0], categoryManager);
-        int category = input(3) - 1;
-
-        Word room;
-        string categoryName = categoryManager.getCategoryName(category);
-        room.secretWord = categoryManager.getRandomWord(categoryName);
-
-        wait(1.0);
-
-        cout << "\n" << endl;
-        cout << "=====================  C A T E G O R Y   S E L E C T E D  :  " << categoryName << "  =====================" << endl;
-        cout << "Before you start, remember the answer consists of 6 alphabets.\n" << endl;
-        cout << "Make sure you answer in UPPERCASE ! !\n" << endl;
-
-        wait(2.0);
-
-        string masked(room.secretWord.length(), '*');
-
-        int chances = 5;
-        bool guessed = false;
-        int wrongGuesses;
-
-        while (chances > 0 && !guessed) {
-            displayHangmanState(categoryName, chances, masked);
-            guessed = processGuess(room.secretWord, masked, chances);
-        }
-        
-        displayGameResult(guessed, room.secretWord);
-
-        break;
-    }
-}
-
-void TwoPlayerSetupGame::start() {
-    Player player(1);
-
-    title();
-    cout << "Please enter your name" << endl;
-    cout << "Player 1 : ";
-    player.name[0] = input("");
-    cout << "\n\nPlayer 2 : ";
-    player.name[1] = input("");
-    cout << "\nGood luck in your game later, player " << player.name[1] << " and player " << player.name[0] << "!" << endl;
-
-    int currentPlayer = 0;
-    int opponent = 1;
-
-    while (player.getScore() < 5 && player.getScore() < 5) { // Simplified score check; adjust for both players
-        displayTurnMessage(player.name[currentPlayer], player.name[opponent]);
-
-        cout << "Player " << player.name[currentPlayer] << "," << endl;
-        cout << "Please enter the word that you want " << player.name[opponent] << " to guess." << endl;
-        cout << "TAKE NOTE => Answer MUST be in UPPERCASE" << endl;
-        string word;
-        while (true) {
-            word = input("");
-            transform(word.begin(), word.end(), word.begin(), ::toupper);
-            if (word.length() >= 1) break;
-            cout << "Word must be at least 1 letter. Try again." << endl;
-        }
-
-        cout << "You entered = [" << word << "]" << endl;
-        wait(1.0);
-        system("cls");
-
-        // Removed hint input; using opponent's name instead
-        Word room;
-        room.secretWord = word;
-
-        displayTurnMessage(player.name[opponent], player.name[currentPlayer]);
-
-        int chances = 5;
-        string masked(room.secretWord.length(), '*');
-        bool guessed = false;
-        int i;
-
-        while (chances > 0 && !guessed) {
-            displayHangmanState("", chances, masked);
-            guessed = processGuess(room.secretWord, masked, chances);
-        }
-
-        displayGameResult(guessed, room.secretWord);
-        
-        swap(currentPlayer, opponent);
-
-        system("cls");
-    }
-
-    cout << "Game Over! Final Scores:" << endl;
-    cout << player.name[0] << ": " << player.getScore() << " points" << endl;
-    cout << player.name[1] << ": " << 0 << " points" << endl; // Placeholder; adjust scoring
-}
-
 int main() {
+    locale::global(locale("")); // Set console to UTF-8 to support Chinese output
     system("cls");
     sf::Music backgroundMusic;
     if (!backgroundMusic.openFromFile("audio/background_music.wav"))
@@ -126,7 +20,7 @@ int main() {
     backgroundMusic.setLooping(true);
     backgroundMusic.play();
 
-    title();
+    displayTitle();
     cout << "\n" << endl;
     printCentered("Hello World!", 77, ' ');
     wait(1.0);
@@ -134,17 +28,43 @@ int main() {
     printCentered("Game production by Li Wei, Min Yu, Jia Jun and Ren Yi", 77, ' ');
     wait(1.0);
     cout << "\n\n" << endl;
-    printCentered("Background Music: “新世纪” by 在虚无中永存", 77, ' ');
+    wstring chinese_string = L"新世纪 - 在虚无中永存";
+    cout << "Background Music: " << endl;
+    wcout << chinese_string << endl;
     wait(1.5);
+
+    system("cls");
+    displayTitle();
+    cout << "\n\n" << endl;
+
+    string filename = "user.txt";
+
+    if (filesystem::exists(filename)) {
+        ifstream inFile(filename);
+        getline(inFile, user.name);
+        inFile.close();
+        cout << "Welcome! " << user.name << std::endl;
+    } else {
+        cout << "Please enter your name: ";
+        user.name = input("");
+
+        ofstream outFile(filename);
+        outFile << user.name;
+        outFile.close();
+
+        cout << "Username saved to file." << std::endl;
+    }
+    
+    wait(1);
 
     while (true) {
         system("cls");
-        title();
+        displayTitle();
         cout << "Welcome to Hangman! Please select your mode" << endl;
         cout << "[1] Single player   (vs. computer)" << endl;
         cout << "[2] Two player      (vs. each other)" << endl;
-        cout << "[3] Quit Game" << endl;
-        cout << "[4] Two player      (working in progress)" << endl;
+        cout << "[3] Two player      (LAN)" << endl;
+        cout << "[4] Quit Game" << endl;
         cout << "Select mode number : ";
 
         int mode;
@@ -152,7 +72,7 @@ int main() {
         cin.clear();
 
         system("cls");
-        title();
+        displayTitle();
         cout << "=====================  M O D E   S E L E C T E D  :  " << mode << "  =====================" << endl;
 
         if (mode == 1) {
@@ -166,9 +86,6 @@ int main() {
             game->start();
             delete game;
         } else if (mode == 3) {
-            displayExitMessage();
-            break;
-        }else if (mode == 4) {
             cout << "Please select an option " << endl;
             cout << "[1] Open Room" << endl;
             cout << "[2] Join Game" << endl;
@@ -178,11 +95,13 @@ int main() {
 
             if (select == 1) {
                 TcpServer server(53000);
-                if (!server.start()) return -1;
-
-                while (true) {
-                    server.update();
+                for (size_t i = 0; i < 20; i++)
+                {
+                    if (!server.start()) break;
                 }
+
+                Game* game = new ServerGame(53000);
+                game->start();
 
             } else if (select == 2) {
                 TcpClient client(53000);
@@ -196,20 +115,20 @@ int main() {
 
                 if (attempts == maxRetries) {
                     cerr << "Server not found: Timeout" << endl;
-                    return -1;
+                    continue;
                 }
 
                 while (!client.connect()) {
                     cerr << "Could not connect to server." << endl;
-                    return -1;
+                    continue;
                 }
 
-                while (true) {
-                    client.update();
-                    client.sendMessage("Working...");
-                    wait(1);
-                }
+                Game* game = new ClientGame(53000);
+                game->start();
             }
+        }else if (mode == 4) {
+            displayExitMessage();
+            break;
         } else {
             backgroundMusic.stop();
             cout << "Invalid Error, Restarting..." << endl;

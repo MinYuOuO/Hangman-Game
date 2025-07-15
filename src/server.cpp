@@ -1,5 +1,4 @@
 #include "server.h"
-
 #include <string>
 #include <iostream>
 #include <SFML/Network.hpp>
@@ -10,8 +9,8 @@ using namespace std;
 TcpServer::TcpServer(unsigned short port) : port(port) {}
 
 bool TcpServer::start() {
-    if (discoverySocket.bind(54000) != sf::Socket::Status::Done) {
-        std::cerr << "Failed to bind UDP discovery socket.\n";
+    if (discoverySocket.bind(53000) != sf::Socket::Status::Done) {
+        cerr << "Failed to bind UDP discovery socket.\n";
         return false;
     }
     discoverySocket.setBlocking(false);
@@ -45,14 +44,14 @@ void TcpServer::listenForDiscovery() {
     }
 }
 
-void TcpServer::update() {
+string TcpServer::update() {
     listenForDiscovery();
 
     if (selector.wait(sf::milliseconds(10))) {
         if (selector.isReady(listener)) {
             // New connection
             if (listener.accept(client) == sf::Socket::Status::Done) {
-                std::cout << "Client connected!\n";
+                cout << "Client connected!\n";
                 client.setBlocking(false);
                 selector.add(client);
                 clientConnected = true;
@@ -60,25 +59,27 @@ void TcpServer::update() {
         } else if (clientConnected && selector.isReady(client)) {
             // Handle client message
             char buffer[1024];
-            std::size_t received;
+            size_t received;
             sf::Socket::Status status = client.receive(buffer, sizeof(buffer), received);
 
             switch (status) {
                 case sf::Socket::Status::Done: {
-                    std::string message(buffer, received);
-                    std::cout << "Client says: " << message << "\n";
+                    string message(buffer, received);
+                    return message;
                     break;
                 }
                 case sf::Socket::Status::NotReady:
-                    // Nothing to read yet
+                    return "false";
                     break;
                 case sf::Socket::Status::Disconnected:
-                    std::cerr << "Client disconnected.\n";
+                    cerr << "Client disconnected.\n";
                     client.disconnect();
+                    return "false";
                     break;
                 case sf::Socket::Status::Error:
                 default:
-                    std::cerr << "Server: Error while receiving from client.\n";
+                    cerr << "Server: Error while receiving from client.\n";
+                    return "false";
                     break;
             }
         }
@@ -164,38 +165,39 @@ bool TcpClient::discoverServer() {
     return false;
 }
 
-void TcpClient::update() {
+string TcpClient::update() {
     char buffer[1024];
-    std::size_t received;
+    size_t received;
     sf::Socket::Status status = socket.receive(buffer, sizeof(buffer), received);
 
     switch (status) {
         case sf::Socket::Status::Done: {
-            std::string message(buffer, received);
-            std::cout << "Server says: " << message << "\n";
+            string message(buffer, received);
+            return message;
             break;
         }
         case sf::Socket::Status::NotReady:
-            // Socket not ready, just skip this tick (non-blocking)
+            return "false";
             break;
         case sf::Socket::Status::Disconnected:
-            std::cerr << "Disconnected from server.\n";
-            // Handle disconnection (e.g., close app or try reconnect)
+            cerr << "Disconnected from server.\n";
+            return "false";
             break;
         case sf::Socket::Status::Error:
         default:
-            std::cerr << "Client: Error while receiving from server.\n";
+            cerr << "Client: Error while receiving from server.\n";
+            return "false";
             break;
     }
 }
 
-void TcpClient::sendMessage(const std::string& message) {
-    std::size_t totalSent = 0;
+void TcpClient::sendMessage(const string& message) {
+    size_t totalSent = 0;
     const char* data = message.c_str();
-    std::size_t toSend = message.size();
+    size_t toSend = message.size();
 
     while (totalSent < toSend) {
-        std::size_t sentThisTime;
+        size_t sentThisTime;
         sf::Socket::Status status = socket.send(data + totalSent, toSend - totalSent, sentThisTime);
 
         if (status == sf::Socket::Status::Done) {
@@ -204,13 +206,13 @@ void TcpClient::sendMessage(const std::string& message) {
             totalSent += sentThisTime;
             continue; // try again to send remaining bytes
         } else if (status == sf::Socket::Status::NotReady) {
-            std::cerr << "Client: Socket not ready to send.\n";
+            cerr << "Client: Socket not ready to send.\n";
             break;
         } else if (status == sf::Socket::Status::Disconnected) {
-            std::cerr << "Client: Disconnected from server.\n";
+            cerr << "Client: Disconnected from server.\n";
             break;
         } else {
-            std::cerr << "Client: Failed to send message.\n";
+            cerr << "Client: Failed to send message.\n";
             break;
         }
     }
