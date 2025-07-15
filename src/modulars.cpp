@@ -390,7 +390,19 @@ void TwoPlayerSetupGame::start() {
     cout << player.name[1] << ": " << player.score[1] << " points" << endl;
 }
 
+ServerGame::ServerGame() : server(54000) {}
+
+void ServerGame::startServer() {
+    server.start();
+
+    while (!server.clientConnected) {
+        server.update();
+    }
+}
+
 void ServerGame::start() {
+    startServer();
+
     Player player;
     player.name[0] = user.name;
 
@@ -418,7 +430,32 @@ void ServerGame::start() {
 
 }
 
+ClientGame::ClientGame() : client(53000) {}
+
+void ClientGame::startServer() {
+    const int maxRetries = 15;
+    int attempts = 0;
+
+    while (attempts < maxRetries && !client.discoverServer()) {
+        cerr << "No response. Retrying (" << (attempts + 1) << "/" << maxRetries << ")..." << endl;
+        wait(0.1);
+        attempts++;
+    }
+
+    if (attempts == maxRetries) {
+        cerr << "Server not found: Timeout" << endl;
+        wait();
+    }
+
+    while (!client.connect()) {
+        cerr << "Could not connect to server." << endl;
+        wait();
+    }
+}
+
 void ClientGame::start() {
+    startServer();
+
     Player player;
     player.name[1] = user.name;
 
@@ -435,7 +472,34 @@ void ClientGame::start() {
             client.sendMessage("received");
         }
     }
-    
+
+    cout << "waiting for opponent..." << endl;
+    Word room;
+
+    receive = false;
+    while (!receive)
+    {
+        string message = client.update();
+        if (message == "received")
+        {
+            receive = true;
+        } else if (!message.empty()){
+            room.secretWord = message;
+            client.sendMessage("received");
+        }
+    }
+
+    int chances = 5;
+    string masked(room.secretWord.length(), '*');
+    bool guessed = false;
+    int i;
+
+    while (chances > 0 && !guessed) {
+        displayHangmanState("", chances, masked);
+        guessed = processGuess(room.secretWord, masked, chances);
+    }
+
+    displayGameResult(guessed, room.secretWord);
 }
 
 

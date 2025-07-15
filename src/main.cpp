@@ -91,41 +91,10 @@ int main() {
             select = input(2);
 
             if (select == 1) {
-                TcpServer server(54000);
-
-                if (!server.start()) break;
-
-                while (!server.clientConnected) {
-                    server.update();
-                }
-
-                Game* game = new ServerGame(server);
+                Game* game = new ServerGame();
                 game->start();
-
             } else if (select == 2) {
-                TcpClient client(53000);
-                const int maxRetries = 15;
-                int attempts = 0;
-
-                while (attempts < maxRetries && !client.discoverServer()) {
-                    cerr << "No response. Retrying (" << (attempts + 1) << "/" << maxRetries << ")..." << endl;
-                    wait(0.1);
-                    attempts++;
-                }
-
-                if (attempts == maxRetries) {
-                    cerr << "Server not found: Timeout" << endl;
-                    wait();
-                    break;
-                }
-
-                while (!client.connect()) {
-                    cerr << "Could not connect to server." << endl;
-                    wait();
-                    break;
-                }
-
-                Game* game = new ClientGame(client);
+                Game* game = new ClientGame();
                 game->start();
             }
         }else if (mode == 4) {

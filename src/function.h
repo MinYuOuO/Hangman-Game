@@ -105,16 +105,18 @@ public:
 };
 
 class ServerGame : public TwoPlayerOnlineGame{
+    void startServer();
 public:
-    TcpServer& server;
-    ServerGame(TcpServer& srv) : server(srv){}
+    TcpServer server;
+    ServerGame();
     void start() override;
 };
 
 class ClientGame : public TwoPlayerOnlineGame{
+    void startServer();
 public:
-    TcpClient& client;
-    ClientGame(TcpClient& cli) : client(cli){}
+    TcpClient client;
+    ClientGame();
     void start() override;
 };
 

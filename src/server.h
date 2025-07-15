@@ -8,7 +8,7 @@ using namespace std;
 
 class TcpServer {
 public:
-    TcpServer(unsigned short port = 53000);
+    TcpServer(unsigned short port);
     bool start();
     string update();
     void sendMessage(const string& message);
@@ -16,7 +16,7 @@ public:
     void listenForDiscovery();
 
 private:
-    unsigned short port;
+    unsigned short port = 53000;
     sf::UdpSocket discoverySocket;
     sf::TcpListener listener;
     sf::TcpSocket client;
@@ -25,7 +25,7 @@ private:
 
 class TcpClient {
 public:
-    TcpClient(unsigned short port = 54000);
+    TcpClient(unsigned short port);
     bool connect();
     string update();
     void sendMessage(const std::string& message);
@@ -34,6 +34,6 @@ public:
 
 private:
     sf::IpAddress serverIp = sf::IpAddress::Any;
-    unsigned short port;
+    unsigned short port = 54000;
     sf::TcpSocket socket;
 };
