@@ -2,7 +2,6 @@
 #include <string>
 #include <utility>
 #include <fstream>
-#include <locale>
 #include "function.h"
 #include <SFML/Audio.hpp>
 
@@ -11,7 +10,6 @@
 using namespace std;
 
 int main() {
-    locale::global(locale("")); // Set console to UTF-8 to support Chinese output
     system("cls");
     sf::Music backgroundMusic;
     if (!backgroundMusic.openFromFile("audio/background_music.wav"))
@@ -28,9 +26,8 @@ int main() {
     printCentered("Game production by Li Wei, Min Yu, Jia Jun and Ren Yi", 77, ' ');
     wait(1.0);
     cout << "\n\n" << endl;
-    wstring chinese_string = L"新世纪 - 在虚无中永存";
-    cout << "Background Music: " << endl;
-    wcout << chinese_string << endl;
+    string chinese_string = u8"新世纪 - 在虚无中永存";
+    cout << "Background Music: " << chinese_string << endl;
     wait(1.5);
 
     system("cls");
@@ -95,9 +92,10 @@ int main() {
 
             if (select == 1) {
                 TcpServer server(53000);
-                for (size_t i = 0; i < 20; i++)
+                for (size_t i = 0; i < 100; i++)
                 {
                     if (!server.start()) break;
+                    wait(0.1);
                 }
 
                 Game* game = new ServerGame(53000);
