@@ -99,7 +99,7 @@ int main() {
                     server.update();
                 }
 
-                Game* game = new ServerGame(54000);
+                Game* game = new ServerGame(server);
                 game->start();
 
             } else if (select == 2) {
@@ -125,13 +125,7 @@ int main() {
                     break;
                 }
 
-                while (true) {
-                    client.update();
-                    client.sendMessage("Working...");
-                    wait(1);
-                }
-
-                Game* game = new ClientGame(53000);
+                Game* game = new ClientGame(client);
                 game->start();
             }
         }else if (mode == 4) {

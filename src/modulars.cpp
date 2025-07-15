@@ -397,14 +397,14 @@ void ServerGame::start() {
     bool receive = false;
     while (!receive)
     {
-        sendMessage(user.name);
-        string message = update();
+        server.sendMessage(user.name);
+        string message = server.update();
         if (message == "received")
         {
             receive = true;
         } else if (!message.empty()){
             player.name[1] = message;
-            sendMessage("received");
+            server.sendMessage("received");
         }
     }
     system("cls");
@@ -425,14 +425,14 @@ void ClientGame::start() {
     bool receive = false;
     while (!receive)
     {
-        sendMessage(user.name);
-        string message = update();
+        client.sendMessage(user.name);
+        string message = client.update();
         if (message == "received")
         {
             receive = true;
         } else if (!message.empty()){
             player.name[0] = message;
-            sendMessage("received");
+            client.sendMessage("received");
         }
     }
     

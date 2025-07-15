@@ -104,15 +104,17 @@ public:
     virtual ~TwoPlayerOnlineGame() = default;
 };
 
-class ServerGame : public TwoPlayerOnlineGame, public TcpServer {
+class ServerGame : public TwoPlayerOnlineGame{
 public:
-    ServerGame(unsigned short port) : TcpServer(port) {}
+    TcpServer& server;
+    ServerGame(TcpServer& srv) : server(srv){}
     void start() override;
 };
 
-class ClientGame : public TwoPlayerOnlineGame, public TcpClient {
+class ClientGame : public TwoPlayerOnlineGame{
 public:
-    ClientGame(unsigned short port) : TcpClient(port) {}
+    TcpClient& client;
+    ClientGame(TcpClient& cli) : client(cli){}
     void start() override;
 };
 
