@@ -9,7 +9,7 @@ using namespace std;
 TcpServer::TcpServer(unsigned short port) : port(port) {}
 
 bool TcpServer::start() {
-    if (discoverySocket.bind(53000) != sf::Socket::Status::Done) {
+    if (discoverySocket.bind(54000) != sf::Socket::Status::Done) {
         cerr << "Failed to bind UDP discovery socket.\n";
         return false;
     }
@@ -52,7 +52,7 @@ string TcpServer::update() {
             // New connection
             if (listener.accept(client) == sf::Socket::Status::Done) {
                 cout << "Client connected!\n";
-                client.setBlocking(false);
+                client.setBlocking(true);
                 selector.add(client);
                 clientConnected = true;
             }
@@ -66,24 +66,21 @@ string TcpServer::update() {
                 case sf::Socket::Status::Done: {
                     string message(buffer, received);
                     return message;
-                    break;
                 }
                 case sf::Socket::Status::NotReady:
                     return "false";
-                    break;
                 case sf::Socket::Status::Disconnected:
                     cerr << "Client disconnected.\n";
                     client.disconnect();
                     return "false";
-                    break;
                 case sf::Socket::Status::Error:
                 default:
                     cerr << "Server: Error while receiving from client.\n";
                     return "false";
-                    break;
             }
         }
     }
+    return "false";
 }
 
 void TcpServer::sendMessage(const std::string& message) {
@@ -91,7 +88,6 @@ void TcpServer::sendMessage(const std::string& message) {
         std::cerr << "Server: No client connected.\n";
         return;
     }
-
     std::size_t totalSent = 0;
     const char* data = message.c_str();
     std::size_t toSend = message.size();
@@ -102,6 +98,7 @@ void TcpServer::sendMessage(const std::string& message) {
 
         if (status == sf::Socket::Status::Done) {
             totalSent += sentThisTime;
+            clientConnected = true;
         } else if (status == sf::Socket::Status::Partial) {
             totalSent += sentThisTime;
             continue; // retry
@@ -122,7 +119,7 @@ void TcpServer::sendMessage(const std::string& message) {
 TcpClient::TcpClient(unsigned short port) : port(port) {}
 
 bool TcpClient::connect() {
-    sf::Socket::Status status = socket.connect(serverIp, port);
+    sf::Socket::Status status = socket.connect(serverIp, 53000);
     if (status != sf::Socket::Status::Done) {
         cerr << "Connection to server failed.\n";
         return false;
@@ -174,21 +171,18 @@ string TcpClient::update() {
         case sf::Socket::Status::Done: {
             string message(buffer, received);
             return message;
-            break;
         }
         case sf::Socket::Status::NotReady:
             return "false";
-            break;
         case sf::Socket::Status::Disconnected:
             cerr << "Disconnected from server.\n";
             return "false";
-            break;
         case sf::Socket::Status::Error:
         default:
             cerr << "Client: Error while receiving from server.\n";
             return "false";
-            break;
     }
+    return "false";
 }
 
 void TcpClient::sendMessage(const string& message) {
@@ -202,14 +196,17 @@ void TcpClient::sendMessage(const string& message) {
 
         if (status == sf::Socket::Status::Done) {
             totalSent += sentThisTime;
+            serverConnected = true;
         } else if (status == sf::Socket::Status::Partial) {
             totalSent += sentThisTime;
             continue; // try again to send remaining bytes
         } else if (status == sf::Socket::Status::NotReady) {
             cerr << "Client: Socket not ready to send.\n";
+            serverConnected = false;
             break;
         } else if (status == sf::Socket::Status::Disconnected) {
             cerr << "Client: Disconnected from server.\n";
+            serverConnected = false;
             break;
         } else {
             cerr << "Client: Failed to send message.\n";
