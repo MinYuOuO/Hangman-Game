@@ -9,13 +9,13 @@ using namespace std;
 TcpServer::TcpServer(unsigned short port) : port(port) {}
 
 bool TcpServer::start() {
-    if (discoverySocket.bind(54000) != sf::Socket::Status::Done) {
+    if (discoverySocket.bind(port) != sf::Socket::Status::Done) {
         cerr << "Failed to bind UDP discovery socket.\n";
         return false;
     }
     discoverySocket.setBlocking(false);
 
-    if (listener.listen(port) != sf::Socket::Status::Done) {
+    if (listener.listen(53000) != sf::Socket::Status::Done) {
         cerr << "Failed to bind server to port.\n";
         return false;
     }
@@ -119,7 +119,7 @@ void TcpServer::sendMessage(const std::string& message) {
 TcpClient::TcpClient(unsigned short port) : port(port) {}
 
 bool TcpClient::connect() {
-    sf::Socket::Status status = socket.connect(serverIp, 53000);
+    sf::Socket::Status status = socket.connect(serverIp, port);
     if (status != sf::Socket::Status::Done) {
         cerr << "Connection to server failed.\n";
         return false;
@@ -133,7 +133,7 @@ bool TcpClient::discoverServer() {
     sf::UdpSocket udp;
     udp.setBlocking(true);
 
-    if (udp.bind(port) != sf::Socket::Status::Done) {
+    if (udp.bind(sf::Socket::AnyPort) != sf::Socket::Status::Done) {
         cerr << "Failed to bind UDP socket for discovery.\n";
         return false;
     }
@@ -213,4 +213,5 @@ void TcpClient::sendMessage(const string& message) {
             break;
         }
     }
+    return;
 }
