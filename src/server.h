@@ -6,34 +6,47 @@
 
 using namespace std;
 
-class TcpServer {
+class Server {
+public:
+    virtual ~Server() = default;
+
+    bool connected = false;
+
+    virtual string update();
+    virtual void sendMessage(const string& message) = 0;
+
+    void sendingAck();
+    bool waitForAck();
+};
+
+class TcpServer : public Server {
+    unsigned short port = 53000;
+    sf::TcpSocket socket;
+    sf::UdpSocket discoverySocket;
+    sf::TcpListener listener;
+    sf::SocketSelector selector;
+
 public:
     TcpServer(unsigned short port);
     bool start();
-    string update();
-    void sendMessage(const string& message);
-    bool clientConnected = false;
     void listenForDiscovery();
 
-private:
-    unsigned short port = 53000;
-    sf::UdpSocket discoverySocket;
-    sf::TcpListener listener;
-    sf::TcpSocket client;
-    sf::SocketSelector selector;
+    string update() override;
+    void sendMessage(const string& message) override;
 };
 
-class TcpClient {
+class TcpClient : public Server {
+    unsigned short port = 54000;
+    sf::TcpSocket socket;
+    sf::TcpListener listener;
+    sf::SocketSelector selector;
+    sf::IpAddress serverIp = sf::IpAddress::Any;
+
 public:
     TcpClient(unsigned short port);
     bool connect();
-    string update();
-    void sendMessage(const std::string& message);
     bool discoverServer();
-    bool serverConnected = false;
 
-private:
-    sf::IpAddress serverIp = sf::IpAddress::Any;
-    unsigned short port = 54000;
-    sf::TcpSocket socket;
+    string update() override;
+    void sendMessage(const string& message) override;
 };

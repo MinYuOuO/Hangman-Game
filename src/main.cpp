@@ -3,11 +3,15 @@
 #include <utility>
 #include <fstream>
 #include "function.h"
+#include <locale>
+#include <codecvt>
 #include <SFML/Audio.hpp>
 
 #include "server.h"
 
 using namespace std;
+
+user globalUser;
 
 int main() {
     system("cls");
@@ -26,27 +30,28 @@ int main() {
     printCentered("Game production by Li Wei, Min Yu, Jia Jun and Ren Yi", 77, ' ');
     wait(1.0);
     cout << "\n\n" << endl;
-    string chinese_string = u8"新世纪 - 在虚无中永存";
-    cout << "Background Music: " << chinese_string << endl;
+
+    wstring chinese_string = L"新世纪 - 在虚无中永存";
+
+    // Set locale to support wide output
+    setlocale(LC_ALL, "");
+    wcout.imbue(locale(""));
+
+    wcout << L"Background Music: " << chinese_string << endl;
     wait(1.5);
 
-    system("cls");
-    displayTitle();
-    cout << "\n\n" << endl;
-
-    string filename = "user.txt";
-
-    if (filesystem::exists(filename)) {
-        ifstream inFile(filename);
-        getline(inFile, user.name);
+    if (filesystem::exists("user.txt")) {
+        ifstream inFile("user.txt");
+        getline(inFile, globalUser.name);
         inFile.close();
-        cout << "Welcome! " << user.name << std::endl;
     } else {
-        cout << "Please enter your name: ";
-        user.name = input("");
+        system("cls");
+        displayTitle();
+        cout << "\n\nPlease enter your name: ";
+        globalUser.name = input("");
 
-        ofstream outFile(filename);
-        outFile << user.name;
+        ofstream outFile("user.txt");
+        outFile << globalUser.name;
         outFile.close();
 
         cout << "Username saved to file." << std::endl;
@@ -57,7 +62,8 @@ int main() {
     while (true) {
         system("cls");
         displayTitle();
-        cout << "Welcome to Hangman! Please select your mode" << endl;
+        cout << "Welcome to Hangman! " << globalUser.name << std::endl;
+        cout << "Please select your mode" << endl;
         cout << "[1] Single player   (vs. computer)" << endl;
         cout << "[2] Two player      (vs. each other)" << endl;
         cout << "[3] Two player      (LAN)" << endl;
@@ -70,7 +76,8 @@ int main() {
 
         system("cls");
         displayTitle();
-        cout << "=====================  M O D E   S E L E C T E D  :  " << mode << "  =====================" << endl;
+        string title = "M O D E   S E L E C T E D  : " + mode;
+        printCentered(title, 77, '=');
 
         if (mode == 1) {
             displayRules();

@@ -1,12 +1,10 @@
-#include <iostream>
-#include <string>
 #include <conio.h>
 #include <ctime>
 #include <limits>
 #include <iomanip>
 #include <algorithm>
+#include <fstream>
 #include "function.h"
-#include "server.h"
 
 using namespace std;
 
@@ -200,26 +198,22 @@ Player::Player() {
     chances[0] = 5; 
 }
 
-Player::Player(int i) {
-    if (i == 2) {
-        for (int n = 0; n < 2; n++) {
-            score[n] = 0;
-            name[n] = "";
-            chances[n] = 4;
+Player::Player(int p) {
+    if (p >= 0 && p <= 2) {
+        for (int i = 0; i <= p-1; i++) {
+            score[i] = 0;
+            name[i] = "";
+            chances[i] = 4;
         }
-    } else if (i >= 0 && i < 2) {
-        score[i] = 0;
-        name[i] = "";
-        chances[i] = 4;
     } else {
-        cerr << "Invalid player index: " << i << endl;
+        cerr << "Invalid player index: " << p << endl;
     }
 }
 
-Player::Player(int i, string n) {
-    score[i] = 0; 
-    name[i] = n; 
-    chances[i] = 5; 
+Player::Player(int p, string n) {
+    score[p-1] = 0; 
+    name[p-1] = n; 
+    chances[p-1] = 5; 
 }
 
 int Player::getScore(int i) {
@@ -281,7 +275,7 @@ string Word::getMaskedWord() const {
 }
 
 void SinglePlayerGame::start() {
-    Player player(1, user.name);
+    Player player(1, globalUser.name);
     CategoryManager categoryManager;
 
     while (true) {
@@ -341,7 +335,7 @@ void TwoPlayerSetupGame::start() {
     int currentPlayer = 0;
     int opponent = 1;
 
-    while (player.score[0] <= 2 && player.score[1] <= 2) {
+    while (player.score[0] < 2 && player.score[1] < 2) {
         displayTitle();
         cout << player.name[0] << ": " << player.score[0] << " points" << endl;
         cout << player.name[1] << ": " << player.score[1] << " points" << endl;
@@ -351,20 +345,19 @@ void TwoPlayerSetupGame::start() {
         cout << "Player " << player.name[currentPlayer] << "," << endl;
         cout << "Please enter the word that you want " << player.name[opponent] << " to guess." << endl;
         cout << "TAKE NOTE => Answer MUST be in UPPERCASE" << endl;
-        string word;
+
+        Word room;
+
         while (true) {
-            word = input("");
-            transform(word.begin(), word.end(), word.begin(), ::toupper);
-            if (word.length() >= 1) break;
+            room.secretWord = input("");
+            transform(room.secretWord.begin(), room.secretWord.end(), room.secretWord.begin(), ::toupper);
+            if (room.secretWord.length() >= 1) break;
             cout << "Word must be at least 1 letter. Try again." << endl;
         }
 
-        cout << "You entered = [" << word << "]" << endl;
+        cout << "You entered = [" << room.secretWord << "]" << endl;
         wait(1.0);
         system("cls");
-
-        Word room;
-        room.secretWord = word;
 
         int chances = 5;
         string masked(room.secretWord.length(), '*');
@@ -388,6 +381,7 @@ void TwoPlayerSetupGame::start() {
     cout << "Game Over! Final Scores:" << endl;
     cout << player.name[0] << ": " << player.score[0] << " points" << endl;
     cout << player.name[1] << ": " << player.score[1] << " points" << endl;
+    wait();
 }
 
 ServerGame::ServerGame() : server(54000) {}
@@ -395,30 +389,36 @@ ServerGame::ServerGame() : server(54000) {}
 void ServerGame::startServer() {
     server.start();
 
-    while (!server.clientConnected) {
+    while (!server.connected) {
+        server.listenForDiscovery();
         server.update();
     }
 }
 
 void ServerGame::start() {
     startServer();
+    wait(1);
 
-    Player player;
-    player.name[0] = user.name;
+    Player player(2);
+    player.name[0] = globalUser.name;
 
-    bool receive = false;
-    while (!receive)
-    {
-        server.sendMessage(user.name);
-        string message = server.update();
-        if (message == "received")
-        {
-            receive = true;
-        } else if (!message.empty()){
-            player.name[1] = message;
-            server.sendMessage("received");
-        }
+    while (!server.waitForAck()) {
+        server.sendMessage(globalUser.name);
     }
+    
+    string clientName;
+    do {
+        clientName = server.update();
+        wait(0.1);
+    } while (clientName == "false" || clientName.empty() || clientName == "ACK");
+
+    player.name[1] = clientName;
+
+    server.sendingAck();
+    wait(1.0);
+
+    clientName.clear();
+
     system("cls");
     displayTitle();
     cout << "\n\n" << endl;
@@ -426,8 +426,32 @@ void ServerGame::start() {
     cout << "Please enter the word that you want " << player.name[1] << " to guess:";
 
     Word room;
-    room.secretWord = input("");
 
+    while (true) {
+        room.secretWord = input("");
+        transform(room.secretWord.begin(), room.secretWord.end(), room.secretWord.begin(), ::toupper);
+        if (room.secretWord.length() >= 1) break;
+        cout << "Word must be at least 1 letter. Try again." << endl;
+    }
+
+    while (!server.waitForAck())
+    {
+        server.sendMessage(room.secretWord);
+    }
+
+    string message;
+    do {
+        message = server.update();
+        wait(0.1);
+    } while (message == "false" || message.empty() || clientName == "ACK");
+
+    system("cls");
+    displayTitle();
+    printCentered(message, 77, '-');
+
+    server.sendingAck();
+
+    wait();
 }
 
 ClientGame::ClientGame() : client(53000) {}
@@ -455,39 +479,41 @@ void ClientGame::startServer() {
 
 void ClientGame::start() {
     startServer();
+    wait(1);
 
-    Player player;
-    player.name[1] = user.name;
+    Player player(2);
+    player.name[1] = globalUser.name;
 
-    bool receive = false;
-    while (!receive)
-    {
-        client.sendMessage(user.name);
-        string message = client.update();
-        if (message == "received")
-        {
-            receive = true;
-        } else if (!message.empty()){
-            player.name[0] = message;
-            client.sendMessage("received");
-        }
+    string serverName;
+    do {
+        serverName = client.update();
+        wait(0.1);
+    } while (serverName == "false" || serverName.empty() || serverName == "ACK");
+
+    player.name[0] = serverName;
+    
+    client.sendingAck();
+    wait(1.0);
+
+    serverName.clear();
+
+    while (!client.waitForAck()) {
+        client.sendMessage(globalUser.name);
     }
 
-    cout << "waiting for opponent..." << endl;
+    cout << "waiting for " << player.name[0] << endl;
     Word room;
 
-    receive = false;
-    while (!receive)
-    {
-        string message = client.update();
-        if (message == "received")
-        {
-            receive = true;
-        } else if (!message.empty()){
-            room.secretWord = message;
-            client.sendMessage("received");
-        }
-    }
+    string message;
+    do {
+        message = client.update();
+        wait(0.1);
+    } while (message == "false" || message.empty() || serverName == "ACK");
+
+    room.secretWord = message;
+    message.clear();
+    client.sendingAck();
+    wait(1.0);
 
     int chances = 5;
     string masked(room.secretWord.length(), '*');
@@ -499,7 +525,13 @@ void ClientGame::start() {
         guessed = processGuess(room.secretWord, masked, chances);
     }
 
+    while (!client.waitForAck())
+    {
+        if (guessed) {
+            client.sendMessage("You Lose!");
+        } else {
+            client.sendMessage("You Win!");
+        }
+    }
     displayGameResult(guessed, room.secretWord);
 }
-
-

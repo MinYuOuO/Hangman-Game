@@ -72,14 +72,16 @@ public:
     int score[2];
 
     Player(); 
-    Player(int i);
-    Player(int i, string n);
+    Player(int p);
+    Player(int p, string n);
     int getScore(int i);
 };
 
-struct {
-    string name;
-} user;
+struct user {
+    std::string name;
+};
+
+extern user globalUser;
 
 // @brief Manages game flow, word selection, interaction with Word and Player objects, user input, game state, win/loss conditions.
 class Game { 

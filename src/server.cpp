@@ -1,10 +1,41 @@
 #include "server.h"
-#include <string>
-#include <iostream>
-#include <SFML/Network.hpp>
-
 
 using namespace std;
+
+std::string Server::update() {
+    return "";
+}
+
+void Server::sendingAck() {
+    sendMessage("ACK");
+}
+
+void Server::sendMessage(const std::string& message) {
+    cerr << "Base Server::sendMessage should not be called.\n";
+}
+
+bool Server::waitForAck() {
+    const float timeoutSeconds = 0.5f;  // Wait up to 5 seconds
+    const int pollIntervalMs = 100;
+    int waitedMs = 0;
+
+    while (waitedMs < timeoutSeconds * 1000) {
+        string message = update();
+
+        if (message == "ACK") {
+            return true;  //ACK received
+        }
+
+        if (message != "false" && !message.empty()) {
+            cout << "Received unexpected message while waiting for ACK: " << message << endl;
+            return false;
+        }
+
+        sf::sleep(sf::milliseconds(pollIntervalMs));
+        waitedMs += pollIntervalMs;
+    }
+    return false;
+}
 
 TcpServer::TcpServer(unsigned short port) : port(port) {}
 
@@ -21,6 +52,7 @@ bool TcpServer::start() {
     }
 
     selector.add(listener);
+
     cout << "Server started on port " << port << "\n";
     return true;
 }
@@ -45,22 +77,20 @@ void TcpServer::listenForDiscovery() {
 }
 
 string TcpServer::update() {
-    listenForDiscovery();
-
     if (selector.wait(sf::milliseconds(10))) {
         if (selector.isReady(listener)) {
             // New connection
-            if (listener.accept(client) == sf::Socket::Status::Done) {
+            if (listener.accept(socket) == sf::Socket::Status::Done) {
                 cout << "Client connected!\n";
-                client.setBlocking(true);
-                selector.add(client);
-                clientConnected = true;
+                socket.setBlocking(false);
+                selector.add(socket);
+                connected = true;
             }
-        } else if (clientConnected && selector.isReady(client)) {
+        } else if (connected && selector.isReady(socket)) {
             // Handle client message
             char buffer[1024];
             size_t received;
-            sf::Socket::Status status = client.receive(buffer, sizeof(buffer), received);
+            sf::Socket::Status status = socket.receive(buffer, sizeof(buffer), received);
 
             switch (status) {
                 case sf::Socket::Status::Done: {
@@ -68,14 +98,15 @@ string TcpServer::update() {
                     return message;
                 }
                 case sf::Socket::Status::NotReady:
+                    cerr << "[Server::update] Not ready\n";
                     return "false";
                 case sf::Socket::Status::Disconnected:
-                    cerr << "Client disconnected.\n";
-                    client.disconnect();
+                    cerr << "[Server::update] Client disconnected.\n";
+                    socket.disconnect();
                     return "false";
                 case sf::Socket::Status::Error:
                 default:
-                    cerr << "Server: Error while receiving from client.\n";
+                    cerr << "[Server::update] Error while receiving from client.\n";
                     return "false";
             }
         }
@@ -83,37 +114,35 @@ string TcpServer::update() {
     return "false";
 }
 
-void TcpServer::sendMessage(const std::string& message) {
-    if (!clientConnected) {
-        std::cerr << "Server: No client connected.\n";
-        return;
-    }
-    std::size_t totalSent = 0;
+void TcpServer::sendMessage(const string& message) {
+    size_t totalSent = 0;
     const char* data = message.c_str();
-    std::size_t toSend = message.size();
+    size_t toSend = message.size();
 
     while (totalSent < toSend) {
-        std::size_t sentThisTime;
-        sf::Socket::Status status = client.send(data + totalSent, toSend - totalSent, sentThisTime);
+        size_t sentThisTime;
+        sf::Socket::Status status = socket.send(data + totalSent, toSend - totalSent, sentThisTime);
 
         if (status == sf::Socket::Status::Done) {
             totalSent += sentThisTime;
-            clientConnected = true;
+            connected = true;
         } else if (status == sf::Socket::Status::Partial) {
             totalSent += sentThisTime;
-            continue; // retry
+            continue; // try again to send remaining bytes
         } else if (status == sf::Socket::Status::NotReady) {
-            std::cerr << "Server: Socket not ready to send.\n";
+            cerr << "Client: Socket not ready to send.\n";
+            connected = false;
             break;
         } else if (status == sf::Socket::Status::Disconnected) {
-            std::cerr << "Server: Client disconnected.\n";
-            clientConnected = false;
+            cerr << "Client: Disconnected from server.\n";
+            connected = false;
             break;
         } else {
-            std::cerr << "Server: Failed to send message to client.\n";
+            cerr << "Client: Failed to send message.\n";
             break;
         }
     }
+    return;
 }
 
 TcpClient::TcpClient(unsigned short port) : port(port) {}
@@ -124,7 +153,16 @@ bool TcpClient::connect() {
         cerr << "Connection to server failed.\n";
         return false;
     }
+
     socket.setBlocking(false);
+
+    if (listener.listen(54000) != sf::Socket::Status::Done) {
+        cerr << "Failed to bind server to port.\n";
+        return false;
+    }
+
+    selector.add(listener);
+
     cout << "Connected to game server!\n";
     return true;
 }
@@ -175,13 +213,14 @@ string TcpClient::update() {
         case sf::Socket::Status::NotReady:
             return "false";
         case sf::Socket::Status::Disconnected:
-            cerr << "Disconnected from server.\n";
+            cerr << "[Client::update] Disconnected from server.\n";
+            socket.disconnect();
             return "false";
         case sf::Socket::Status::Error:
         default:
-            cerr << "Client: Error while receiving from server.\n";
+            cerr << "[Client::update] Error while receiving from server.\n";
             return "false";
-    }
+            }
     return "false";
 }
 
@@ -196,17 +235,17 @@ void TcpClient::sendMessage(const string& message) {
 
         if (status == sf::Socket::Status::Done) {
             totalSent += sentThisTime;
-            serverConnected = true;
+            connected = true;
         } else if (status == sf::Socket::Status::Partial) {
             totalSent += sentThisTime;
             continue; // try again to send remaining bytes
         } else if (status == sf::Socket::Status::NotReady) {
             cerr << "Client: Socket not ready to send.\n";
-            serverConnected = false;
+            connected = false;
             break;
         } else if (status == sf::Socket::Status::Disconnected) {
             cerr << "Client: Disconnected from server.\n";
-            serverConnected = false;
+            connected = false;
             break;
         } else {
             cerr << "Client: Failed to send message.\n";
