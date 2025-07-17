@@ -1,13 +1,16 @@
+#include "function.h"
+
 #include <conio.h>
 #include <ctime>
 #include <limits>
 #include <iomanip>
 #include <algorithm>
-#include <fstream>
-#include <SFML/Audio.hpp>
-#include "function.h"
 
 using namespace std;
+
+// ============================================================================
+//                             Utility Functions
+// ============================================================================
 
 void wait() {
     cout << '\n' << "Press any key to continue..." << endl;
@@ -15,11 +18,20 @@ void wait() {
     cin.get();
 }
 
+void printCentered(string text, int width, char fillChar = ' ') {
+    int padding = (width - text.length()) / 2;
+    cout << setfill(fillChar) << setw(padding + text.length()) << text << setw(width - (padding + text.length())) << "" << endl;
+}
+
 void wait(float seconds) {
     clock_t startClock = clock();
     float secondsAhead = seconds * CLOCKS_PER_SEC;
     while (clock() < startClock + secondsAhead);
 }
+
+// ============================================================================
+//                              Input Functions
+// ============================================================================
 
 int input(int limit) {
     int insert;
@@ -63,10 +75,9 @@ char input(char value) {
     }
 }
 
-void printCentered(string text, int width, char fillChar = ' ') {
-    int padding = (width - text.length()) / 2;
-    cout << setfill(fillChar) << setw(padding + text.length()) << text << setw(width - (padding + text.length())) << "" << endl;
-}
+// ============================================================================
+//                             Game Display Functions
+// ============================================================================
 
 void displayTitle() {
     const int width = 77;
@@ -113,11 +124,10 @@ void displayTwoPlayerRules() {
     cout << "1. This game mode requires two players" << endl;
     cout << "2. Each player will type a word for the other to guess" << endl;
     cout << "3. You need to guess the word by trying one alphabet or the whole word" << endl;
-    cout << "4. You have 4 chances per round" << endl;
+    cout << "4. You have chances 5 to guess the word per round" << endl;
     cout << "5. If you fail to guess after all chances, your opponent scores" << endl;
-    cout << "6. Correct guesses earn you 4 points" << endl;
-    cout << "7. The game continues until someone reaches 5 points" << endl;
-    cout << "8. The game ends with a ranking display" << endl;
+    cout << "6. The game continues until someone reaches 5 points" << endl;
+    cout << "7. The game ends with a ranking display" << endl;
     cout << endl;
     cout << "GOOD LUCK!!" << endl;
 
@@ -174,62 +184,102 @@ void displayGameResult(bool guessed, const string& secretWord) {
     wait();
 }
 
-void playCorrectSound() {
-    static sf::SoundBuffer buffer;
-    static sf::Sound correctSound(buffer); 
+// ============================================================================
+//                                  Classes
+// ============================================================================
 
-    static bool loaded = buffer.loadFromFile("audio/Correct.wav");
-    if (loaded) {
-        correctSound.setBuffer(buffer);
-        correctSound.play();
+// ----------------------------------------------------------------------------
+// Music Player
+// ----------------------------------------------------------------------------
+
+MusicPlayer::MusicPlayer() {
+    backgroundMusic = "audio/background_music.wav";
+    audio = "";
+}
+
+void MusicPlayer::playMusic() {
+    if (!music.openFromFile(backgroundMusic)) {
+        cerr << "Failed to load background music." << endl;
+        return;
+    } else {
+        music.setLooping(true);
+        music.play();
     }
 }
 
-void playErrorSound() {
-    static sf::SoundBuffer buffer;
-    static sf::Sound errorSound(buffer);
+void MusicPlayer::playSound() {
+    sf::Sound sound(buffer);
 
-    static bool loaded = buffer.loadFromFile("audio/Error.wav");
-    if (loaded) {
-        errorSound.setBuffer(buffer);
-        errorSound.play();
+    if (!buffer.loadFromFile(this->audio)) {
+        cerr << "Failed to load audio." << endl;
+        return;
+    } else {
+        sound.setBuffer(buffer);
+        sound.play();
     }
-
 }
 
-bool processGuess(const string& secretWord, string& masked, int& chances) {
+MusicPlayer::~MusicPlayer() {
+    music.stop();
+}
+
+// ----------------------------------------------------------------------------
+// Word Class
+// ----------------------------------------------------------------------------
+
+Word::Word() {
+    maskedWord = "";
+}
+
+string Word::getMaskedWord() const {
+    string masked = secretWord;
+    for (char& c : masked) {
+        if (c != '*') c = '*';
+    }
+    return masked;
+}
+
+bool Word::processGuess(int& chances) {
     char c = '\0';
     cout << "Letter: ";
     c = input(c);
+
+    MusicPlayer soundPlayer;
     
     bool found = false;
     for (size_t i = 0; i < secretWord.length(); ++i) {
         if (secretWord[i] == toupper(c)) {
-            masked[i] = secretWord[i];
+            maskedWord[i] = secretWord[i];
             found = true;
-            playCorrectSound();
+            soundPlayer.audio = "audio/Correct.wav";
         }
     }
 
     if (!found) {
         chances--;
-        playErrorSound();
+        soundPlayer.audio = "audio/Error.wav";
     }
-
-    return masked == secretWord; 
+    
+    soundPlayer.playSound();
+    return maskedWord == secretWord; 
 }
+
+// ----------------------------------------------------------------------------
+// Player Class
+// ----------------------------------------------------------------------------
 
 Player::Player() {
     name[0] = ""; 
-    chances[0] = 5; 
+    chances[0] = 5;
 }
 
 Player::Player(int p) {
+    p -= 1;
     if (p >= 0 && p <= 2) {
         for (int i = 0; i <= p-1; i++) {
             score[i] = 0;
             name[i] = "";
-            chances[i] = 4;
+            chances[i] = 5;
         }
     } else {
         cerr << "Invalid player index: " << p << endl;
@@ -237,14 +287,19 @@ Player::Player(int p) {
 }
 
 Player::Player(int p, string n) {
-    score[p-1] = 0; 
-    name[p-1] = n; 
-    chances[p-1] = 5; 
+    p -= 1;
+    score[p] = 0; 
+    name[p] = n; 
+    chances[p] = 5;
 }
 
 int Player::getScore(int i) {
     return ++score[i]; 
 };
+
+// ----------------------------------------------------------------------------
+// Category Manager
+// ----------------------------------------------------------------------------
 
 CategoryManager::CategoryManager() {
     categoriesName = {"Food", "Country", "Comp. Science"};
@@ -292,13 +347,9 @@ void CategoryManager::displayCategoryMenu(const string& playerName) {
     cout << "Category number : ";
 }
 
-string Word::getMaskedWord() const {
-    string masked = secretWord;
-    for (char& c : masked) {
-        if (c != '*') c = '*';
-    }
-    return masked;
-}
+// ----------------------------------------------------------------------------
+// Single Player Game
+// ----------------------------------------------------------------------------
 
 void SinglePlayerGame::start() {
     Player player(1, globalUser.name);
@@ -328,15 +379,13 @@ void SinglePlayerGame::start() {
 
         wait(2.0);
 
-        string masked(room.secretWord.length(), '*');
-
-        int chances = 5;
+        room.maskedWord = string(room.secretWord.length(), '*');
+        player.chances[0] = 5;
         bool guessed = false;
-        int wrongGuesses;
 
-        while (chances > 0 && !guessed) {
-            displayHangmanState(categoryName, chances, masked);
-            guessed = processGuess(room.secretWord, masked, chances);
+        while (player.chances[0] > 0 && !guessed) {
+            displayHangmanState(categoryName, player.chances[0], room.maskedWord);
+            guessed = room.processGuess(player.chances[0]);
         }
         
         displayGameResult(guessed, room.secretWord);
@@ -344,6 +393,10 @@ void SinglePlayerGame::start() {
         break;
     }
 }
+
+// ----------------------------------------------------------------------------
+// Two Player Local Setup Game
+// ----------------------------------------------------------------------------
 
 void TwoPlayerSetupGame::start() {
     Player player(2);
@@ -385,14 +438,14 @@ void TwoPlayerSetupGame::start() {
         wait(1.0);
         system("cls");
 
-        int chances = 5;
-        string masked(room.secretWord.length(), '*');
+        player.chances[opponent] = 5;
+        room.maskedWord = string(room.secretWord.length(), '*');
         bool guessed = false;
         int i;
 
-        while (chances > 0 && !guessed) {
-            displayHangmanState("", chances, masked);
-            guessed = processGuess(room.secretWord, masked, chances);
+        while (player.chances[opponent] > 0 && !guessed) {
+            displayHangmanState("", player.chances[opponent], room.maskedWord);
+            guessed = room.processGuess(player.chances[opponent]);
         }
 
         displayGameResult(guessed, room.secretWord);
@@ -409,6 +462,10 @@ void TwoPlayerSetupGame::start() {
     cout << player.name[1] << ": " << player.score[1] << " points" << endl;
     wait();
 }
+
+// ----------------------------------------------------------------------------
+// Server Game
+// ----------------------------------------------------------------------------
 
 ServerGame::ServerGame() : server(54000) {}
 
@@ -480,6 +537,10 @@ void ServerGame::start() {
     wait();
 }
 
+// ----------------------------------------------------------------------------
+// Client Game
+// ----------------------------------------------------------------------------
+
 ClientGame::ClientGame() : client(53000) {}
 
 void ClientGame::startServer() {
@@ -541,14 +602,13 @@ void ClientGame::start() {
     client.sendingAck();
     wait(1.0);
 
-    int chances = 5;
-    string masked(room.secretWord.length(), '*');
+    player.chances[0] = 5;
+    room.maskedWord = string(room.secretWord.length(), '*');
     bool guessed = false;
-    int i;
 
-    while (chances > 0 && !guessed) {
-        displayHangmanState("", chances, masked);
-        guessed = processGuess(room.secretWord, masked, chances);
+    while (player.chances[0] > 0 && !guessed) {
+        displayHangmanState("", player.chances[0], room.maskedWord);
+        guessed = room.processGuess(player.chances[0]);
     }
 
     while (!client.waitForAck())

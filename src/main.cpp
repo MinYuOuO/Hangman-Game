@@ -1,13 +1,8 @@
-#include <iostream>
-#include <string>
-#include <utility>
-#include <fstream>
 #include "function.h"
+
+#include <utility>
 #include <locale>
 #include <codecvt>
-#include <SFML/Audio.hpp>
-
-#include "server.h"
 
 using namespace std;
 
@@ -15,12 +10,9 @@ user globalUser;
 
 int main() {
     system("cls");
-    sf::Music backgroundMusic;
-    if (!backgroundMusic.openFromFile("audio/background_music.wav"))
-        cerr << "Failed to load background music." << endl;
 
-    backgroundMusic.setLooping(true);
-    backgroundMusic.play();
+    MusicPlayer music;
+    music.playMusic();
 
     displayTitle();
     cout << "\n" << endl;
@@ -108,7 +100,7 @@ int main() {
             displayExitMessage();
             break;
         } else {
-            backgroundMusic.stop();
+            music.~MusicPlayer();
             cout << "Invalid Error, Restarting..." << endl;
             wait();
         }
