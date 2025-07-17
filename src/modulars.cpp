@@ -94,7 +94,7 @@ void displayRules() {
     cout << "1. This game mode requires 1 player only" << endl;
     cout << "2. The computer will generate a word from your chosen category" << endl;
     cout << "3. You need to guess the word by trying one alphabet or the whole word" << endl;
-    cout << "4. You have 15 chances to guess the word" << endl;
+    cout << "4. You have 5 chances to guess the word" << endl;
     cout << "5. If you fail to guess the word after all chances, the game ends" << endl;
     cout << endl;
     cout << "GOOD LUCK!!" << endl;
