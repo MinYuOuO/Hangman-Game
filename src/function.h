@@ -55,6 +55,11 @@ void displayTwoPlayerRules();
 void displayTurnMessage(const string& playerName, const string& opponentName);
 void displayHintAndWord(const string& hint, const string& maskedWord, int chances);
 
+void playCorrectSound();
+
+void playErrorSound();
+
+
 // Class declarations
 // Attribute for secret word, revealed letters; methods to check guesses, update revealed word, check if fully guessed.
 class Word {

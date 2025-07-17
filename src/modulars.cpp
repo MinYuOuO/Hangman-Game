@@ -4,6 +4,7 @@
 #include <iomanip>
 #include <algorithm>
 #include <fstream>
+#include <SFML/Audio.hpp>
 #include "function.h"
 
 using namespace std;
@@ -173,6 +174,29 @@ void displayGameResult(bool guessed, const string& secretWord) {
     wait();
 }
 
+void playCorrectSound() {
+    static sf::SoundBuffer buffer;
+    static sf::Sound correctSound(buffer); 
+
+    static bool loaded = buffer.loadFromFile("audio/Correct.wav");
+    if (loaded) {
+        correctSound.setBuffer(buffer);
+        correctSound.play();
+    }
+}
+
+void playErrorSound() {
+    static sf::SoundBuffer buffer;
+    static sf::Sound errorSound(buffer);
+
+    static bool loaded = buffer.loadFromFile("audio/Error.wav");
+    if (loaded) {
+        errorSound.setBuffer(buffer);
+        errorSound.play();
+    }
+
+}
+
 bool processGuess(const string& secretWord, string& masked, int& chances) {
     char c = '\0';
     cout << "Letter: ";
@@ -183,11 +207,13 @@ bool processGuess(const string& secretWord, string& masked, int& chances) {
         if (secretWord[i] == toupper(c)) {
             masked[i] = secretWord[i];
             found = true;
+            playCorrectSound();
         }
     }
 
     if (!found) {
         chances--;
+        playErrorSound();
     }
 
     return masked == secretWord; 
