@@ -18,15 +18,15 @@ void wait() {
     cin.get();
 }
 
-void printCentered(string text, int width, char fillChar = ' ') {
-    int padding = (width - text.length()) / 2;
-    cout << setfill(fillChar) << setw(padding + text.length()) << text << setw(width - (padding + text.length())) << "" << endl;
-}
-
 void wait(float seconds) {
     clock_t startClock = clock();
     float secondsAhead = seconds * CLOCKS_PER_SEC;
     while (clock() < startClock + secondsAhead);
+}
+
+void printCentered(string text, int width, char fillChar = ' ') {
+    int padding = (width - text.length()) / 2;
+    cout << setfill(fillChar) << setw(padding + text.length()) << text << setw(width - (padding + text.length())) << "" << endl;
 }
 
 // ============================================================================
@@ -36,14 +36,18 @@ void wait(float seconds) {
 int input(int limit) {
     int insert;
     while (true) {
-        cin >> insert;
-        if (cin.fail() || insert < 0 || insert > limit) {
-            cout << "Invalid input. Please try again." << endl;
-            cin.clear();
-            return 0;
-        } else {
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            return insert;
+        try {
+            cin >> insert;
+            if (cin.fail() || insert < 0 || insert > limit) {
+                cout << "Invalid input. Please try again." << endl;
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            } else {
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                return insert;
+            }
+        } catch(const std::exception& e) {
+            cerr << e.what() << '\n';
         }
     }
 }
@@ -55,7 +59,6 @@ string input(string value) {
         getline(cin, insert);
         if (insert.empty()) {
             cout << "Invalid input. Please enter a non-empty value. Try again." << endl;
-            return 0;
         } else {
             return insert;
         }
@@ -70,7 +73,6 @@ char input(char value) {
             cout << "Invalid input. Try again." << endl;
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            return 0;
         } else {
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             return insert;
@@ -107,7 +109,7 @@ void displayRules() {
     cout << "GAME RULES :" << endl;
     cout << "1. This game mode requires 1 player only" << endl;
     cout << "2. The computer will generate a word from your chosen category" << endl;
-    cout << "3. You need to guess the word by trying one alphabet or the whole word" << endl;
+    cout << "3. You need to guess the word by trying one alphabet" << endl;
     cout << "4. You have 5 chances to guess the word" << endl;
     cout << "5. If you fail to guess the word after all chances, the game ends" << endl;
     cout << endl;
@@ -126,10 +128,10 @@ void displayTwoPlayerRules() {
     cout << "GAME RULES :" << endl;
     cout << "1. This game mode requires two players" << endl;
     cout << "2. Each player will type a word for the other to guess" << endl;
-    cout << "3. You need to guess the word by trying one alphabet or the whole word" << endl;
+    cout << "3. You need to guess the word by trying one alphabet" << endl;
     cout << "4. You have chances 5 to guess the word per round" << endl;
     cout << "5. If you fail to guess after all chances, your opponent scores" << endl;
-    cout << "6. The game continues until someone reaches 5 points" << endl;
+    cout << "6. The game continues until someone reaches 3 points" << endl;
     cout << "7. The game ends with a ranking display" << endl;
     cout << endl;
     cout << "GOOD LUCK!!" << endl;
@@ -160,9 +162,9 @@ void displayHangmanState(const string& categoryName, int chances, const string& 
     cout << "\n\n" << endl;
     cout << setfill(' ') << setw(10) << "  +---+" << endl;
     cout << setfill(' ') << setw(10) << "  |   |" << setw(30) << "Subject: " << categoryName << endl;
-    cout << "     " << (chances < 5 ? "O" : " ") << "   |" << setw(30) << "Chances left: " << chances << endl;
-    cout << "    " << (chances < 4 ? "/" : " ") << (chances < 3 ? "|" : " ") << (chances < 2 ? "/" : " ") << "  |" << setw(30) << "Word: " << masked << endl;
-    cout << "     " << (chances < 1 ? "/": " ") << (chances < 0 ? " /": "  ") << " |" << endl;
+    cout << "     " << (chances <= 5 ? "O" : " ") << "   |" << setw(30) << "Chances left: " << chances << endl;
+    cout << "    " << (chances <= 4 ? "/" : " ") << (chances <= 3 ? "|" : " ") << (chances <= 2 ? "/" : " ") << "  |" << setw(30) << "Word: " << masked << endl;
+    cout << "    " << (chances <= 1 ? "/ ": "  ") << (chances <= 0 ? "/": " ") << "  |" << endl;
     cout << setfill(' ') << setw(10) << "      |" << endl;
     cout << setfill(' ') << setw(12) << "=========" << endl;
     cout << "\n\n" << endl;
@@ -363,7 +365,8 @@ void SinglePlayerGame::start() {
         displayTitle();
 
         categoryManager.displayCategoryMenu(player.name[0]);
-        int category = input(3) - 1;
+        int category = input(3);
+        category -= 1;
 
         Word room;
         string categoryName = categoryManager.getCategoryName(category);
@@ -414,15 +417,18 @@ void TwoPlayerSetupGame::start() {
     int opponent = 1;
 
     while (player.score[0] < 2 && player.score[1] < 2) {
+        system("cls");
         displayTitle();
         cout << player.name[0] << ": " << player.score[0] << " points" << endl;
         cout << player.name[1] << ": " << player.score[1] << " points" << endl;
 
+        cout << "\n" << endl;
+
         displayTurnMessage(player.name[currentPlayer], player.name[opponent]);
 
+        displayTitle();
         cout << "Player " << player.name[currentPlayer] << "," << endl;
-        cout << "Please enter the word that you want " << player.name[opponent] << " to guess." << endl;
-        cout << "TAKE NOTE => Answer MUST be in UPPERCASE" << endl;
+        cout << "Please enter the word that you want " << player.name[opponent] << " to guess: ";
 
         Word room;
 
