@@ -102,19 +102,16 @@ void displayGameResult(bool guessed, const string& secretWord);
 // ----------------------------------------------------------------------------
 
 class MusicPlayer {
-    sf::SoundBuffer buffer;
     sf::Music music;
-public:
     string backgroundMusic;
-    string audio;
-
+public:
     MusicPlayer();
 
     /// @brief Plays looping background music
     void playMusic();
 
     /// @brief Plays a one-shot sound effect
-    void playSound();
+    void playSound(string audio);
 
     ~MusicPlayer(); // destructor
 };

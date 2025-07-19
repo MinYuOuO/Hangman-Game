@@ -40,6 +40,7 @@ int input(int limit) {
         if (cin.fail() || insert < 0 || insert > limit) {
             cout << "Invalid input. Please try again." << endl;
             cin.clear();
+            return 0;
         } else {
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             return insert;
@@ -54,6 +55,7 @@ string input(string value) {
         getline(cin, insert);
         if (insert.empty()) {
             cout << "Invalid input. Please enter a non-empty value. Try again." << endl;
+            return 0;
         } else {
             return insert;
         }
@@ -68,6 +70,7 @@ char input(char value) {
             cout << "Invalid input. Try again." << endl;
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            return 0;
         } else {
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             return insert;
@@ -193,27 +196,27 @@ void displayGameResult(bool guessed, const string& secretWord) {
 // ----------------------------------------------------------------------------
 
 MusicPlayer::MusicPlayer() {
-    backgroundMusic = "audio/background_music.wav";
-    audio = "";
+    backgroundMusic = "./audio/background_music.wav";
 }
 
 void MusicPlayer::playMusic() {
     if (!music.openFromFile(backgroundMusic)) {
         cerr << "Failed to load background music." << endl;
         return;
-    } else {
-        music.setLooping(true);
-        music.play();
     }
+        
+    music.setLooping(true);
+    music.play();
 }
 
-void MusicPlayer::playSound() {
-    sf::Sound sound(buffer);
+void MusicPlayer::playSound(string audio) {
+    static sf::SoundBuffer buffer;
+    static sf::Sound sound(buffer);
+    static bool loaded;
 
-    if (!buffer.loadFromFile(this->audio)) {
-        cerr << "Failed to load audio." << endl;
-        return;
-    } else {
+    loaded = buffer.loadFromFile(audio); // this function have bug, dont touch!!!!!
+
+    if (loaded) {
         sound.setBuffer(buffer);
         sound.play();
     }
@@ -244,23 +247,23 @@ bool Word::processGuess(int& chances) {
     cout << "Letter: ";
     c = input(c);
 
-    MusicPlayer soundPlayer;
+    MusicPlayer soundEffect;
     
     bool found = false;
     for (size_t i = 0; i < secretWord.length(); ++i) {
         if (secretWord[i] == toupper(c)) {
             maskedWord[i] = secretWord[i];
             found = true;
-            soundPlayer.audio = "audio/Correct.wav";
         }
     }
 
-    if (!found) {
+    if (found) {
+        soundEffect.playSound("./audio/Correct.wav");
+    } else {
         chances--;
-        soundPlayer.audio = "audio/Error.wav";
+        soundEffect.playSound("./audio/Error.wav");
     }
-    
-    soundPlayer.playSound();
+
     return maskedWord == secretWord; 
 }
 
@@ -359,10 +362,6 @@ void SinglePlayerGame::start() {
         system("cls");
         displayTitle();
 
-        cout << "\nGood luck in your game later, player " << player.name[0] << "!" << endl;
-
-        wait(1.0);
-
         categoryManager.displayCategoryMenu(player.name[0]);
         int category = input(3) - 1;
 
@@ -370,14 +369,14 @@ void SinglePlayerGame::start() {
         string categoryName = categoryManager.getCategoryName(category);
         room.secretWord = categoryManager.getRandomWord(categoryName);
 
-        wait(1.0);
+        wait(0.5);
 
         cout << "\n" << endl;
         cout << "=====================  C A T E G O R Y   S E L E C T E D  :  " << categoryName << "  =====================" << endl;
         cout << "Before you start, remember the answer consists of 6 alphabets.\n" << endl;
         cout << "Make sure you answer in UPPERCASE ! !\n" << endl;
 
-        wait(2.0);
+        wait(1.0);
 
         room.maskedWord = string(room.secretWord.length(), '*');
         player.chances[0] = 5;

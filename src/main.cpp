@@ -17,10 +17,10 @@ int main() {
     displayTitle();
     cout << "\n" << endl;
     printCentered("Hello World!", 77, ' ');
-    wait(1.0);
+    wait(1);
     cout << "\n\n\n\n" << endl;
     printCentered("Game production by Li Wei, Min Yu, Jia Jun and Ren Yi", 77, ' ');
-    wait(1.0);
+    wait(1);
     cout << "\n\n" << endl;
 
     wstring chinese_string = L"新世纪 - 在虚无中永存";
@@ -30,7 +30,7 @@ int main() {
     wcout.imbue(locale(""));
 
     wcout << L"Background Music: " << chinese_string << endl;
-    wait(1.5);
+    wait(1);
 
     if (filesystem::exists("user.txt")) {
         ifstream inFile("user.txt");
@@ -65,12 +65,9 @@ int main() {
         int mode;
         mode = input(4);
         cin.clear();
-
-        system("cls");
-        displayTitle();
-        string title = "M O D E   S E L E C T E D  : " + mode;
-        printCentered(title, 77, '=');
-
+        
+        cout << "\n" << endl;
+    
         if (mode == 1) {
             displayRules();
             Game* game = new SinglePlayerGame();
@@ -100,10 +97,10 @@ int main() {
             displayExitMessage();
             break;
         } else {
-            music.~MusicPlayer();
             cout << "Invalid Error, Restarting..." << endl;
             wait();
         }
     }
+    music.~MusicPlayer();
     return 0;
 }
