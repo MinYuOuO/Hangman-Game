@@ -10,7 +10,7 @@
                 "${workspaceFolder}\\src\\main.cpp",
                 "${workspaceFolder}\\src\\modulars.cpp",
                 "-o",
-                "${workspaceFolder}\\build\\main.exe"
+                "${workspaceFolder}\\build\\main.exe",
             ],
             "options": {
                 "cwd": "${fileDirname}"

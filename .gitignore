@@ -1,3 +1,4 @@
-./build
-build/main.exe
-.vscode/settings.json
+build
+.vscode
+CMakeUserPresets.json
+out
